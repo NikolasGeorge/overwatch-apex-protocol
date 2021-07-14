@@ -1,0 +1,55 @@
+rule("Apex: Team 2 - Ult Damage Bonus")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Pharah), Team 2) && Is Using Ultimate(Event Player));
+			Set Projectile Speed(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
+			Set Projectile Speed(Event Player, 100);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(McCree), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6.200);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Reaper), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Set Move Speed(Event Player, 150);
+			Wait Until(Is Using Ultimate(Event Player) == False, 3);
+			Set Move Speed(Event Player, 105);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Soldier: 76), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Genji), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Hanzo), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(7.500, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Doomfist), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(5, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+	}
+}

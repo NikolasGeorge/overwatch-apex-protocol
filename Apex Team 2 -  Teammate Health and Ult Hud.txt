@@ -1,0 +1,26 @@
+rule("Apex: Teammate Helath and Ult Hud")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == False;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(Team Of(Event Player)), Is Duplicating(Event Player) == True ? Hero Icon String(Hero Being Duplicated(
+			Event Player)) : Hero Icon String(Hero Of(Event Player)), String("{0} - {1}", Hero Of(Event Player), Event Player), String(
+			"{0} - {1}", Is Alive(Event Player) == True ? Round To Integer(Health(Event Player), Up) : Icon String(Skull),
+			Ultimate Charge Percent(Event Player) == 100 ? (Is Duplicating(Event Player) == True ? Ability Icon String(
+			Hero Being Duplicated(Event Player), Button(Ultimate)) : Ability Icon String(Hero Of(Event Player), Button(Ultimate)))
+			: Custom String("{0}%", Ultimate Charge Percent(Event Player))), Left, 0, Health(Event Player) >= Max Health(Event Player)
+			/ 2 ? Color(Sky Blue) : Color(Red), Color(White), Health(Event Player) >= Max Health(Event Player) / 2 ? Color(White) : Color(
+			Red), Visible To String and Color, Default Visibility);
+	}
+}

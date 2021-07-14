@@ -1,0 +1,5301 @@
+variables
+{
+	global:
+		4: Zayra_Gravity
+		31: SmokePOS
+		32: SmokeActive
+
+	player:
+		1: Third_Person_Camera
+		2: Genji_Ult_Choice_Path
+		5: Roadhog_Chain_Target_1
+		6: Roadhog_Chain_Target_2
+		7: Roadhog_Chain_Target_3
+		9: Roadhog_Chain_Target_4
+		23: Roadhog_Chain_Target_5
+		24: Anti_AFK
+		25: Roadhog_Chain_Target_6
+		26: Roadhog_Chain_Target
+		27: Roadhog_Chain_Project
+		28: Talent3
+		31: Roadhog_Chain
+		32: Roadhog_Chain_Trace
+		33: Roadhog_Chain_Pull
+		34: SmokeBombCD
+		36: TorbKilled
+		55: Sigma_Using_Ult
+		56: Ana_Sleep_Dart_Postion
+		57: Ana_Sleep_Dart_Postion_Victom
+		58: Ana_Widowmaker_Bot
+		63: Reaper_Ana_Bot
+		64: Hanzo_Ult_Charge
+		65: Torb_Passive_Destory_Bots
+		66: Apex_Heal_Ledge
+		69: Roadhog_Hook_Velocity
+		71: Soldier76_Dot_Effect
+		72: Soldier76_Dot_Sprint
+}
+
+rule("Apex: Death - Respawn Apex from Fall")
+{
+	event
+	{
+		Player Died;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Event Was Environment == True;
+		Is Hero Being Played(Hero(Torbjörn), Team 1) == False;
+		Number Of Living Players(Team 2) >= 4;
+	}
+
+	actions
+	{
+		Big Message(All Players(All Teams), Custom String("{1} The Apex teleported to spawn {0}", Hero Icon String(Hero Of(Event Player)),
+			Ability Icon String(Hero Of(Event Player), Button(Ultimate))));
+		Event Player.Apex_Heal_Ledge = True;
+		Set Healing Received(Event Player, 6);
+		Wait(0.025, Ignore Condition);
+		Respawn(Event Player);
+		Wait(0.025, Ignore Condition);
+		Disallow Button(Event Player, Button(Ability 1));
+		Disallow Button(Event Player, Button(Ability 2));
+		Disallow Button(Event Player, Button(Ultimate));
+		Set Invisible(Event Player, All);
+		Set Player Health(Event Player, 1);
+		Set Status(Event Player, Null, Rooted, 20);
+		Wait(20, Ignore Condition);
+		Event Player.Apex_Heal_Ledge = False;
+		Set Invisible(Event Player, None);
+		Set Player Health(Event Player, 500);
+		Allow Button(Event Player, Button(Ability 1));
+		Allow Button(Event Player, Button(Ability 2));
+		Allow Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("Apex: Spawn Bot")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Meleeing(Event Player) == True;
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+	}
+
+	actions
+	{
+		Create Dummy Bot(Hero(Soldier: 76), Team 2, -1, Event Player, Event Player);
+	}
+}
+
+rule("Apex: Reload - Game Start")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Set Ammo(Event Player, 0, 0);
+	}
+}
+
+rule("Apex: Teammate Helath and Ult Hud")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == False;
+	}
+
+	actions
+	{
+		Create HUD Text(All Players(Team Of(Event Player)), Is Duplicating(Event Player) == True ? Hero Icon String(Hero Being Duplicated(
+			Event Player)) : Hero Icon String(Hero Of(Event Player)), String("{0} - {1}", Hero Of(Event Player), Event Player), String(
+			"{0} - {1}", Is Alive(Event Player) == True ? Round To Integer(Health(Event Player), Up) : Icon String(Skull),
+			Ultimate Charge Percent(Event Player) == 100 ? (Is Duplicating(Event Player) == True ? Ability Icon String(
+			Hero Being Duplicated(Event Player), Button(Ultimate)) : Ability Icon String(Hero Of(Event Player), Button(Ultimate)))
+			: Custom String("{0}%", Ultimate Charge Percent(Event Player))), Left, 0, Health(Event Player) >= Max Health(Event Player)
+			/ 2 ? Color(Sky Blue) : Color(Red), Color(White), Health(Event Player) >= Max Health(Event Player) / 2 ? Color(White) : Color(
+			Red), Visible To String and Color, Default Visibility);
+	}
+}
+
+rule("Apex: Team 2 - Ult Damage Bonus")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Pharah), Team 2) && Is Using Ultimate(Event Player));
+			Set Projectile Speed(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
+			Set Projectile Speed(Event Player, 100);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(McCree), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6.200);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Reaper), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Set Move Speed(Event Player, 150);
+			Wait Until(Is Using Ultimate(Event Player) == False, 3);
+			Set Move Speed(Event Player, 105);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Soldier: 76), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Genji), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Hanzo), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(7.500, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Doomfist), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(5, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+	}
+}
+
+rule("Apex: Objective")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is In Spawn Room(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Objective Description(All Living Players(Team 1), Custom String("Kill the Hunters"), Visible To and String);
+		Set Objective Description(All Living Players(Team 2), Custom String("Hunt the Apex"), Visible To and String);
+	}
+}
+
+rule("Apex: Text - Bug Fix")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Assembling Heroes == True;
+	}
+
+	actions
+	{
+		Destroy All HUD Text;
+	}
+}
+
+rule("Apex: Self Damage: Regen - Healing")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Attacker == Event Player;
+	}
+
+	actions
+	{
+		Heal(Event Player, Event Player, Event Damage);
+	}
+}
+
+rule("Apex: Disable respawn")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Disable Built-In Game Mode Respawning(All Players(All Teams));
+	}
+}
+
+rule("Apex: Text - Hunted Text")
+{
+	event
+	{
+		Player Died;
+		Team 2;
+		All;
+	}
+
+	actions
+	{
+		Big Message(Victim, String("Hunted"));
+		Big Message(All Living Players(Team 2), Custom String("Hunter Down"));
+		Communicate(All Living Players(Team 2), Group Up);
+	}
+}
+
+rule("Apex: Text - Hunt Text")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Big Message(Event Player, String("Hunt"));
+	}
+}
+
+rule("Apex: Text - Hunt Text 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Big Message(Event Player, String("Hunt"));
+	}
+}
+
+rule("Apex: Text - Killing Effect")
+{
+	event
+	{
+		Player Dealt Final Blow;
+		Team 1;
+		All;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Hanzo Sonic Arrow Initial Pulse Effect, Color(Blue), Victim, 15);
+	}
+}
+
+rule("Apex: Match: Time - 5 Minutes")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Set Match Time(300);
+		If(Is Control Mode Point Locked == True);
+			Set Match Time(150);
+	}
+}
+
+rule("Apex: Assembling Heroes")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Assembling Heroes == True;
+	}
+
+	actions
+	{
+		Set Match Time(15);
+	}
+}
+
+rule("Apex: Spawning in")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Is Assembling Heroes == False;
+	}
+
+	actions
+	{
+		Set Match Time(0);
+	}
+}
+
+rule("Apex: Third person - Camera")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Event Player.Third_Person_Camera == False;
+	}
+
+	actions
+	{
+		Start Camera(Event Player, Eye Position(Event Player) + World Vector Of(Vector(0, 0, 0), Event Player, Rotation)
+			+ Up * 0.500 + Facing Direction Of(Event Player) * -2, Event Player + Facing Direction Of(Event Player) * 1000, 50);
+		Wait(1.250, Ignore Condition);
+		Event Player.Third_Person_Camera = True;
+	}
+}
+
+rule("Apex:  First Person - Camera")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Interact)) == True;
+		Event Player.Third_Person_Camera == True;
+	}
+
+	actions
+	{
+		Stop Camera(Event Player);
+		Wait(0.250, Ignore Condition);
+		Event Player.Third_Person_Camera = False;
+	}
+}
+
+rule("Apex: Anti AFK/Spawn Room - Spawn Ledge")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Apex_Heal_Ledge = False;
+	}
+}
+
+rule("Apex: Anti AFK/Spawn Room - Heal")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is In Spawn Room(Event Player) == True;
+		Event Player.Apex_Heal_Ledge == False;
+	}
+
+	actions
+	{
+		Set Healing Received(Event Player, 0);
+		Small Message(Event Player, Custom String("Healing Disabled"));
+		Wait(5, Restart When True);
+		Abort If(Event Player.Apex_Heal_Ledge == True);
+		Set Healing Received(Event Player, 100);
+		Small Message(Event Player, Custom String("Healing Enabled"));
+	}
+}
+
+rule("Apex: Anti AFK/Spawn Room -")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		All;
+	}
+
+	conditions
+	{
+		Is In Spawn Room(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Anti_AFK = 50;
+		Create HUD Text(Event Player, Icon String(Warning), Custom String("Anti AFK: {0} Seconds", Round To Integer(Event Player.Anti_AFK,
+			Up)), Null, Right, 0, Color(Black), Color(White), Color(White), Visible To and String, Default Visibility);
+		Chase Player Variable At Rate(Event Player, Anti_AFK, 0, 1, Destination and Rate);
+		While(Event Player.Anti_AFK > 0 && Is In Spawn Room(Event Player));
+			Wait(5, Ignore Condition);
+		End;
+		Destroy HUD Text(Last Text ID);
+		If(Is In Spawn Room(Event Player) == True);
+			Kill(Event Player, Null);
+	}
+}
+
+rule("Apex: Control: If Team 1 is fully dead")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 1) == 0;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Abort If Condition Is False;
+		Wait(3, Abort When False);
+		Set Slow Motion(50);
+		Wait(1, Ignore Condition);
+		Set Slow Motion(100);
+		Declare Team Victory(Team 2);
+		Destroy All Effects;
+	}
+}
+
+rule("Apex: Control: If Team 2 is fully dead")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 2) == 0;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Abort If(Is Hero Being Played(Hero(Mercy), Team 1));
+		Abort If Condition Is False;
+		Set Slow Motion(50);
+		Wait(2, Ignore Condition);
+		Set Slow Motion(100);
+		Declare Team Victory(Team 1);
+		Destroy All Effects;
+	}
+}
+
+rule("Apex: Control: Get claimed team 1")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Control Mode Scoring Percentage(Team 2) >= 10;
+		Number Of Living Players(Team 2) == 0;
+	}
+
+	actions
+	{
+		Declare Team Victory(Team 1);
+	}
+}
+
+rule("Apex: Control: Get claimed team 2")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Control Mode Scoring Percentage(Team 2) >= 10;
+		Number Of Living Players(Team 1) == 0;
+	}
+
+	actions
+	{
+		Declare Team Victory(Team 2);
+	}
+}
+
+rule("Apex: Payload: Get claimed team 2")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Payload Progress Percentage == 100;
+	}
+
+	actions
+	{
+		Declare Round Victory(Team 2);
+	}
+}
+
+rule("Apex: Payload/Assult: If Team 1 is fully dead")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 1) == 0;
+		Is Game In Progress == True;
+		Control Mode Scoring Percentage(All Teams) >= 0;
+		Payload Progress Percentage >= 0;
+		Point Capture Percentage >= 0;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Abort If Condition Is False;
+		Abort If(Is Between Rounds);
+		Set Slow Motion(50);
+		Wait(1.100, Ignore Condition);
+		Set Slow Motion(100);
+		Declare Round Victory(Team 2);
+		Destroy All Effects;
+	}
+}
+
+rule("Apex: Payload/Assult: If Team 2 is fully dead")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 2) == 0;
+		Is Game In Progress == True;
+		Control Mode Scoring Percentage(All Teams) >= 0;
+		Payload Progress Percentage >= 0;
+		Point Capture Percentage >= 0;
+	}
+
+	actions
+	{
+		Abort If(Is Hero Being Played(Hero(Mercy), Team 1));
+		Abort If(Is Between Rounds);
+		Set Slow Motion(50);
+		Set Match Time(0);
+		Wait(1.100, Ignore Condition);
+		Set Slow Motion(100);
+		Destroy All Effects;
+	}
+}
+
+rule("Apex Team 2: Support Buffs - Symmetra")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		Symmetra;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(15, Ignore Condition);
+		Play Effect(All Players(All Teams), Tracer Recall Disappear Effect, Color(Team 2), Event Player, 1);
+		Play Effect(All Players(All Teams), Symmetra Teleporter Reappear Sound, Color(Team 2), Event Player, 20);
+		Add Health Pool To Player(All Living Players(Team 2), Shields, 100, True, True);
+		Big Message(All Players(Team 2), Custom String("{2} Shields from {0} {1}", Event Player, Hero Icon String(Hero(Symmetra)),
+			Ability Icon String(Hero(Zarya), Button(Ability 1))));
+	}
+}
+
+rule("Apex Team 2: Support Buffs - Mei")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		Mei;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(10, Ignore Condition);
+		Play Effect(All Players(All Teams), Echo Sticky Bomb Explosion Effect, Color(Team 2), Event Player, 1);
+		Play Effect(All Players(All Teams), Brigitte Repair Pack Impact Sound, Color(Team 2), Event Player, 20);
+		Add Health Pool To Player(All Living Players(Team 2), Health, 100, True, True);
+		Big Message(All Players(Team 2), Custom String("{2} Buffed up from {0} {1}", Event Player, Hero Icon String(Hero(Mei)),
+			Ability Icon String(Hero(Baptiste), Button(Ability 1))));
+	}
+}
+
+rule("Apex Team 2: Support Buffs - Sombra")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		Sombra;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(12.500, Ignore Condition);
+		Play Effect(All Players(All Teams), Sombra Translocating Sound, Color(White), Event Player, 20);
+		Play Effect(All Players(All Teams), Sombra Translocating Material Effect, Color(Team 2), Event Player, 1);
+		Add Health Pool To Player(All Living Players(Team 2), Armor, 100, False, True);
+		Big Message(All Players(Team 2), Custom String("{2} Armor from {0} {1}", Event Player, Hero Icon String(Hero(Sombra)),
+			Ability Icon String(Hero(Torbjörn), Button(Ability 2))));
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Ana: Ult - Bot")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Ana;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Ana_Widowmaker_Bot = True;
+		Create Dummy Bot(Hero(Widowmaker), Team 1, -1, Spawn Points(Team 2), Event Player);
+		Wait Until(Is Alive(Event Player) == False, 8);
+		Destroy All Dummy Bots;
+		Event Player.Ana_Widowmaker_Bot = False;
+	}
+}
+
+rule("Ana: Ult - Bot Spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Widowmaker;
+	}
+
+	conditions
+	{
+		Players On Hero(Hero(Ana), Team 1).Ana_Widowmaker_Bot == True;
+		Is Hero Being Played(Hero(Ana), Team 1) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("Nano Boost"));
+		Set Invisible(Event Player, All);
+		Set Status(Event Player, Null, Phased Out, 8);
+		Set Ultimate Charge(Event Player, 100);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ultimate));
+		Wait Until(Is Alive(Event Player) == False, 7.900);
+		Kill(Event Player, Null);
+	}
+}
+
+rule("Ana: Sleep - Knockback")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Is Hero Being Played(Hero(Ana), Team 1) == True;
+	}
+
+	actions
+	{
+		Event Player.Ana_Sleep_Dart_Postion = Position Of(Attacker);
+		Event Player.Ana_Sleep_Dart_Postion_Victom = Position Of(Victim);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 30, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
+		Set Status(Victim, Null, Phased Out, 5);
+		Disable Nameplates(Attacker, Victim);
+		Start Forcing Player Outlines(Attacker, Victim, False, Color(Black), Default);
+		Disable Hero HUD(Event Player);
+		Disable Game Mode HUD(Event Player);
+		Wait(4.984, Ignore Condition);
+		Destroy All Effects;
+		Enable Hero HUD(Event Player);
+		Enable Game Mode HUD(Event Player);
+		Stop Forcing Player Outlines(Attacker, Victim);
+		Enable Nameplates(Attacker, Victim);
+	}
+}
+
+rule("Ana: Sleep - Sleeping Effect")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Ana), Team 1) == True;
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		Create Effect(Event Player, Sphere, Custom Color(0, 0, 0, 255), Position Of(Event Player) + Up * 2, 2,
+			Visible To Position and Radius);
+		Create Effect(Event Player, Sphere, Custom Color(0, 0, 0, 255), Position Of(Event Player) + Up * 2, 2,
+			Visible To Position and Radius);
+		Create Effect(Event Player, Sphere, Custom Color(0, 0, 0, 255), Position Of(Event Player) + Up * 2, 2,
+			Visible To Position and Radius);
+		Create Effect(Event Player, Sphere, Custom Color(0, 0, 0, 255), Position Of(Event Player) + Up * 2, 2,
+			Visible To Position and Radius);
+		Wait(5, Ignore Condition);
+		Destroy All Effects;
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Dva: Primary Fire - Shotgun Range Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Event Was Critical Hit == True;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 30);
+	}
+}
+
+rule("Dva: Primary Fire - Movespeed Bonus for Mech")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+		(Is In Alternate Form(Event Player) == True) == False;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 130);
+		Wait Until(Is Firing Primary(Event Player) == False, 240);
+		Set Move Speed(Event Player, 115);
+	}
+}
+
+rule("Dva: Boosters - Boost Speed and Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), DVa Micro Missiles Explosion Effect, Color(Team 1), Event Player, 1);
+		Set Primary Fire Enabled(Event Player, False);
+		Set Move Speed(Event Player, 200);
+		Set Aim Speed(Event Player, 10);
+		Wait Until(Is Using Ability 1(Event Player) == False, 2);
+		Set Primary Fire Enabled(Event Player, True);
+		Set Aim Speed(Event Player, 100);
+		Set Move Speed(Event Player, 115);
+	}
+}
+
+rule("Dva: Micro Missiles - Root Dva")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Ability 1 Enabled(Event Player, False);
+		Set Primary Fire Enabled(Event Player, False);
+		Wait Until(Is Using Ability 2(Event Player) == False, 1.650);
+		Set Primary Fire Enabled(Event Player, True);
+		Set Ability 1 Enabled(Event Player, True);
+	}
+}
+
+rule("Dva: Micro Missiles - Airborne Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+		Is In Air(Victim) == True;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 50);
+	}
+}
+
+rule("Dva: Ult - Nuclear Option")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == True;
+		Is Button Held(Event Player, Button(Reload)) == False;
+	}
+
+	actions
+	{
+		Wait(2.900, Abort When False);
+		Set Primary Fire Enabled(Event Player, False);
+		Set Melee Enabled(Event Player, False);
+		Set Damage Dealt(Event Player, 100000);
+		Wait(0.200, Ignore Condition);
+		Set Damage Dealt(Event Player, 100);
+		Set Primary Fire Enabled(Event Player, True);
+		Set Melee Enabled(Event Player, True);
+	}
+}
+
+rule("Dva: Boosters - Cancel Boost")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Press Button(Event Player, Button(Ability 1));
+		Wait(0.050, Ignore Condition);
+		Press Button(Event Player, Button(Ability 1));
+	}
+}
+
+rule("Dva: Passive - Eject Mech")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == False;
+		Is Button Held(Event Player, Button(Reload)) == True;
+	}
+
+	actions
+	{
+		Damage(Event Player, Null, 10000);
+	}
+}
+
+rule("Dva: Passive - Pilot Moveset")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Set Damage Dealt(Event Player, 280);
+		Set Max Ammo(Event Player, 0, 9);
+		Set Ammo(Event Player, 0, 9);
+		Set Move Speed(Event Player, 105);
+		Set Projectile Speed(Event Player, 250);
+	}
+}
+
+rule("Dva: Passive - Pilot Gun Fire Rate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == True;
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Primary Fire Enabled(Event Player, False);
+		Wait(0.190, Ignore Condition);
+		Set Primary Fire Enabled(Event Player, True);
+		Loop If Condition Is True;
+		Set Primary Fire Enabled(Event Player, True);
+	}
+}
+
+rule("Dva: Passive - Mech Moveset")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == False;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Set Damage Dealt(Event Player, 50);
+		Set Move Speed(Event Player, 115);
+		Set Projectile Speed(Event Player, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Genji: Ult - Choose Path")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Ultimate Charge Percent(Event Player) == 100;
+		Is In Air(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Phased Out, 15);
+		Set Invisible(Event Player, All);
+		Set Move Speed(Event Player, 0);
+		Disallow Button(Event Player, Button(Ability 1));
+		Disallow Button(Event Player, Button(Ability 2));
+		Disallow Button(Event Player, Button(Jump));
+		Disallow Button(Event Player, Button(Primary Fire));
+		Disallow Button(Event Player, Button(Secondary Fire));
+		Disallow Button(Event Player, Button(Ultimate));
+		Disallow Button(Event Player, Button(Melee));
+		Wait(1, Ignore Condition);
+		Create HUD Text(Event Player, Custom String("Choose your path..."), Null, Null, Top, 0, Color(White), Color(White), Color(White),
+			Visible To and String, Default Visibility);
+		Wait(3, Ignore Condition);
+		Event Player.Genji_Ult_Choice_Path = 0;
+		Allow Button(Event Player, Button(Ultimate));
+		Allow Button(Event Player, Button(Melee));
+		Create HUD Text(Event Player, Null, Custom String(
+			" \r\n○ Stronger Shurikens\r\n\r\n○ Invisible Dash\r\n\r\n○ Dash through Walls\r\n\r\n○ Deflect hits Harder\r\n\r\n○ Smoke Bombs\r\n  "),
+			Null, Left, 1, Color(Sky Blue), Color(White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Null, Custom String(
+			" \r\nHeal through Damage Dealt ○\r\n\r\n    Deflect is Phased Out ○\r\n\r\n      Brandish your Sword ○\r\n\r\n        Dash Leaves a DOT ○\r\n\r\n "),
+			Null, Right, 1, Color(Red), Color(White), Color(Red), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Ability Icon String(Hero(Genji), Button(Primary Fire)), Null, Null, Left, 2, Color(Sky Blue), Color(
+			White), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Ability Icon String(Hero(Genji), Button(Ultimate)), Null, Null, Right, 2, Color(Red), Color(White),
+			Color(Red), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Custom String("Reject the Demon's Power\r\n\r\n|| Crouch ||\r\n  "), Null, Null, Left, 0, Color(
+			Sky Blue), Color(Sky Blue), Color(White), Visible To and String, Default Visibility);
+		Create HUD Text(Event Player, Custom String("Embrace the Demon's Power\r\n\r\n|| Ult ||\r\n "), Null, Null, Right, 0, Color(Red),
+			Color(Red), Color(Red), Visible To and String, Default Visibility);
+		Wait Until(Is Using Ultimate(Event Player) || Is Crouching(Event Player), 15);
+		If(Event Player == Is Using Ultimate(Event Player));
+			Event Player.Genji_Ult_Choice_Path = 2;
+			Destroy All HUD Text;
+			Start Scaling Player(Event Player, 1.300, True);
+			Set Invisible(Event Player, None);
+			Create Effect(All Players(Team 2), Winston Primal Rage Effect, Color(White), Event Player, 1, Visible To Position and Radius);
+			Create Effect(All Players(Team 2), Winston Primal Rage Sound, Color(White), Event Player, 100, Visible To Position and Radius);
+			Play Effect(All Players(Team 2), Doomfist Meteor Strike Impact Effect, Color(Red), Event Player, 1);
+			Create Effect(All Players(Team 2), Torbjörn Overloading Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+			Clear Status(Event Player, Phased Out);
+			Set Move Speed(Event Player, 110);
+			Allow Button(Event Player, Button(Primary Fire));
+			Allow Button(Event Player, Button(Secondary Fire));
+			Allow Button(Event Player, Button(Jump));
+			Allow Button(Event Player, Button(Ability 1));
+			Allow Button(Event Player, Button(Ability 2));
+		Else;
+			Set Ultimate Charge(Event Player, 0);
+			Apply Impulse(Event Player, Up, 30, To Player, Cancel Contrary Motion);
+			Destroy All HUD Text;
+			Set Move Speed(Event Player, 110);
+			Event Player.Genji_Ult_Choice_Path = 1;
+			Allow Button(Event Player, Button(Primary Fire));
+			Allow Button(Event Player, Button(Secondary Fire));
+			Allow Button(Event Player, Button(Jump));
+			Allow Button(Event Player, Button(Ability 1));
+			Allow Button(Event Player, Button(Ability 2));
+			Wait(0.500, Ignore Condition);
+			Clear Status(Event Player, Phased Out);
+			Set Invisible(Event Player, None);
+	}
+}
+
+rule("Genji: Bugfix - Touch ground to choose path")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is In Air(Event Player) == True;
+	}
+
+	actions
+	{
+		Disallow Button(Event Player, Button(Ultimate));
+		Wait Until(Is On Ground(Event Player), 99999);
+		Allow Button(Event Player, Button(Ultimate));
+	}
+}
+
+disabled rule("Genji: Shinobi Form")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Genji: Passive - Dash Wall Boost")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Is On Wall(Event Player) == True;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Facing Direction Of(Event Player), 50, To World, Cancel Contrary Motion);
+	}
+}
+
+rule("Genji: Passive - Shinobi Form Outline and Nameplate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Event Player.Genji_Ult_Choice_Path == 1;
+	}
+
+	actions
+	{
+		Set Ultimate Ability Enabled(Event Player, False);
+		Event Player.Talent3 = True;
+		Start Forcing Player Outlines(Event Player, All Players(Team 2), True, Color(Gray), Occluded);
+		Start Scaling Player(Event Player, 0.900, True);
+		Disable Nameplates(Event Player, All Players(Team 2));
+	}
+}
+
+rule("Genji: Passive - Shinobi Form Headshot Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Event Was Critical Hit == True;
+		Event Player.Genji_Ult_Choice_Path == 1;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 75);
+	}
+}
+
+rule("Genji: Primary Fire - Ammo Count")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Event Player.Genji_Ult_Choice_Path == 1;
+	}
+
+	actions
+	{
+		Set Max Ammo(Event Player, 0, 60);
+	}
+}
+
+rule("Genji: Primary Fire - Headshot Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Event Player.Genji_Ult_Choice_Path == 1;
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 100);
+		Wait(0.016, Ignore Condition);
+	}
+}
+
+rule("Genji: Dash - Dash through Walls and Invisible")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Event Player.Talent3 == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+	}
+
+	actions
+	{
+		Disable Movement Collision With Environment(Event Player, False);
+		Set Invisible(Event Player, All);
+		Wait(0.350, Ignore Condition);
+		Enable Movement Collision With Environment(Event Player);
+		Set Invisible(Event Player, None);
+	}
+}
+
+rule("Genji: Smoke Bomb - Hud Text")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Destroy HUD Text(Last Text ID);
+		Event Player.SmokeBombCD = 27;
+		Create HUD Text(Event Player, String("{0} - {1} - {2}", Hero Icon String(Hero(Genji)), Custom String("Smoke Bomb"),
+			Ability Icon String(Hero(Sigma), Button(Ability 1))), String("Time"), Event Player.SmokeBombCD, Left, 0, Color(White), Color(
+			White), Color(White), Visible To and String, Default Visibility);
+		Chase Player Variable Over Time(Event Player, SmokeBombCD, 0, 27, Destination and Duration);
+		Wait(27, Ignore Condition);
+		Destroy HUD Text(Last Text ID);
+		Create HUD Text(Event Player, String("{0} - {1} - {2}", Hero Icon String(Hero(Genji)), Custom String("Smoke Bomb Ready!"),
+			Ability Icon String(Hero(Sigma), Button(Ability 1))), Null, Null, Left, 0, Color(Lime Green), Color(White), Color(White),
+			Visible To and String, Default Visibility);
+	}
+}
+
+rule("Genji: Smoke Bomb - Hud Text Melee")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Event Player.Genji_Ult_Choice_Path == 1;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Create HUD Text(Event Player, String("{0}: {1}", Input Binding String(Button(Melee)), Custom String("Melee for Smoke Bomb")), Null,
+			Null, Left, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+	}
+}
+
+rule("Genji: Smoke Bomb - Smoke Global and Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Global.SmokeActive == False;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Global.SmokeActive = True;
+		Global.SmokePOS = Position Of(Event Player);
+		Create Effect(All Players(Team 1), Ring, Color(Lime Green), Global.SmokePOS, 14, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Set Invisible(Event Player, All);
+		Wait(7, Ignore Condition);
+		Destroy All Effects;
+		Global.SmokeActive = False;
+		Set Invisible(Event Player, None);
+		Wait(20, Ignore Condition);
+	}
+}
+
+rule("Genji: Smoke Bomb - Smoke Global and Effect outvisible")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Global.SmokeActive == True;
+		Distance Between(Event Player, Global.SmokePOS) > 14;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Set Invisible(Event Player, None);
+	}
+}
+
+rule("Genji: Smoke Bomb - Smoke Global and Effect invisible")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Global.SmokeActive == True;
+		Distance Between(Event Player, Global.SmokePOS) < 14;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Set Invisible(Event Player, All);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Lime Green), Position Of(Event Player) + Up * 0.100, 0.500);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Lime Green), Position Of(Event Player) + Up * 0.100, 0.500);
+		Wait(0.050, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Genji: Smoke Bomb - Check")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Global.SmokeActive == True;
+		Distance Between(Event Player, Global.SmokePOS) < 14;
+		Ability Cooldown(Event Player, Button(Ability 1)) > 1;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Set Ability Cooldown(Event Player, Button(Ability 1), 1);
+	}
+}
+
+rule("Genji: Smoke Bomb - Spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Global.SmokeActive = False;
+	}
+}
+
+disabled rule("Genji: Demon Form")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Genji: Passive - Damage Recived")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Received(Event Player, 25);
+	}
+}
+
+rule("Genji: Primary Fire - Heal")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Heal(Event Player, Null, 2);
+	}
+}
+
+rule("Genji: Dash - Damage over time")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Event Ability == Button(Ability 1);
+		Event Player.Genji_Ult_Choice_Path == 2;
+	}
+
+	actions
+	{
+		Start Damage Over Time(Victim, Null, 2, 25);
+		Play Effect(All Players(Team 2), Explosion Sound, Color(White), Event Player, 5);
+	}
+}
+
+rule("Genji: Deflect - Phased out")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Genji), Team 1) == True;
+		Is Using Ability 2(Event Player) == True;
+		Event Player.Genji_Ult_Choice_Path == 2;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Phased Out, 2);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Hanzo:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Hanzo;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		If(Event Was Critical Hit == True);
+			Apply Impulse(Victim, Direction Towards(Attacker, Victim), 100, To World, Cancel Contrary Motion);
+			Set Status(Victim, Null, Knocked Down, 2);
+		End;
+		Set Status(Victim, Null, Stunned, 1);
+	}
+}
+
+rule("Hanzo:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Hanzo;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Start Heal Over Time(Event Player, Event Player, 2, 20);
+	}
+}
+
+rule("Hanzo:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Hanzo;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Start Damage Over Time(Victim, Null, 3, 10);
+	}
+}
+
+rule("Hanzo:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Hanzo;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Event Player.Hanzo_Ult_Charge == 0;
+	}
+
+	actions
+	{
+		Event Player.Hanzo_Ult_Charge = 1;
+		Wait(1, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ultimate));
+		Wait(1, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ultimate));
+		Wait(1, Ignore Condition);
+		Event Player.Hanzo_Ult_Charge = 0;
+	}
+}
+
+rule("Hanzo:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Hanzo;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ultimate);
+	}
+
+	actions
+	{
+		Start Heal Over Time(Event Player, Event Player, 3, 5);
+		Start Damage Over Time(Victim, Null, 5, 10);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Junkrat: Passive - Resurrect Player")
+{
+	event
+	{
+		Player Dealt Final Blow;
+		Team 1;
+		Junkrat;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Junkrat), Team 1) == True;
+		Is Dead(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Ignore Condition);
+		Resurrect(Event Player);
+		Big Message(All Players(All Teams), Custom String(" {1} Last Laugh", Null, Hero Icon String(Hero(Junkrat))));
+		Damage(Event Player, Null, 500);
+	}
+}
+
+rule("Junkrat: Passive - Resurrect Damage")
+{
+	event
+	{
+		Player Died;
+		Team 1;
+		Junkrat;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 500);
+		Wait Until(Is Alive(Event Player) == True, 1);
+		Set Damage Dealt(Event Player, 150);
+	}
+}
+
+rule("Junkrat: Trap - Knockdown")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Junkrat;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Knocked Down, 3);
+	}
+}
+
+rule("Junkrat: Ult - Movespeed Scaling")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Junkrat;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 80);
+		Wait(4, Ignore Condition);
+		Set Move Speed(Event Player, 120);
+	}
+}
+
+rule("Junkrat: Ult - Damage Buff")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Junkrat;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 150);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Mccree: Primary Fire - %Health Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Event Was Critical Hit == True;
+		Ammo(Event Player, 0) == 0;
+		Is Firing Secondary(Event Player) == False;
+	}
+
+	actions
+	{
+		Damage(Victim, Event Player, Max Health(Victim) * 0.400);
+	}
+}
+
+rule("Mccree: Primary Fire - Sound Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Ammo(Event Player, 0) == 0;
+		Is Firing Secondary(Event Player) == False;
+		Match Time < 295;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Bastion Tank Cannon Explosion Sound, Color(White), Position Of(Event Player), 100);
+	}
+}
+
+rule("Mccree: Secondary Fire - Ammo Loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+		Is Firing Secondary(Event Player) == True;
+		Is Standing(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 65);
+		Set Ammo(Event Player, 0, 4);
+		Wait(0.200, Ignore Condition);
+		Loop If(Is Standing(Event Player));
+		Set Damage Dealt(Event Player, 115);
+	}
+}
+
+rule("Mccree: Roll - Impulse Up Jump")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 10, To World, Cancel Contrary Motion);
+		Wait(5.800, Ignore Condition);
+	}
+}
+
+rule("Mccree: Roll - Impulse Forward")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Forward, 4, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Mccree: Roll - Roll Effects")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Moira Fade Disappear Effect, Color(Team 1), Event Player, 1);
+		Set Status(Event Player, Null, Phased Out, 0.400);
+		Wait(0.040, Ignore Condition);
+		Set Invisible(Event Player, All);
+		Wait(0.360, Ignore Condition);
+		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(Team 1), Event Player, 1);
+		Set Invisible(Event Player, None);
+	}
+}
+
+rule("Mccree: Flash Bang - Effect Outlines")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Wait(0.016, Ignore Condition);
+		Disable Nameplates(Attacker, Victim);
+		Start Forcing Player Outlines(Attacker, Victim, False, Color(White), Default);
+		Disable Hero HUD(Event Player);
+		Disable Game Mode HUD(Event Player);
+		Wait(0.784, Ignore Condition);
+		Destroy All Effects;
+		Enable Hero HUD(Event Player);
+		Enable Game Mode HUD(Event Player);
+		Stop Forcing Player Outlines(Attacker, Victim);
+		Enable Nameplates(Attacker, Victim);
+	}
+}
+
+rule("Mccree: Flash Bang - Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Damage(Filtered Array(Players Within Radius(Victim, 5, Opposite Team Of(Team Of(Event Player)), Surfaces),
+			Victim != Current Array Element), Event Player, 50);
+		Damage(Victim, Null, 20);
+		Wait(0.016, Ignore Condition);
+	}
+}
+
+rule("Mccree: Flash Bang -  Effect")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Wait(0.016, Ignore Condition);
+		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
+		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
+		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
+		Loop If(Has Status(Event Player, Stunned));
+		Destroy All Effects;
+	}
+}
+
+rule("Mccree: Ult - Damage Reduction")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		McCree;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Received(Event Player, 15);
+		Wait Until(Is Using Ultimate(Event Player) == False, 6);
+		Set Damage Received(Event Player, 40);
+	}
+}
+
+rule("Mccree: Ult - Force Root and Direction")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+		Is Using Ultimate(Players On Hero(Hero(McCree), Team 1)) == True;
+	}
+
+	actions
+	{
+		Start Facing(Event Player, Direction Towards(Event Player, Player Closest To Reticle(Event Player, Opposite Team Of(Team Of(
+			Event Player)))), 150, To World, Direction and Turn Rate);
+		Set Status(All Living Players(All Teams), Null, Rooted, 1);
+		Wait(0.500, Ignore Condition);
+		Stop Facing(All Players(Team 2));
+	}
+}
+
+rule("Mccree: Ult - Damage Buff after 4 Seconds")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is Hero Being Played(Hero(McCree), Team 1) == True;
+	}
+
+	actions
+	{
+		Wait(4, Abort When False);
+		Set Damage Dealt(Event Player, 1000);
+		Create Effect(All Players(All Teams), Ana Nano Boosted Effect, Color(Team 1), Event Player, 2, Visible To Position and Radius);
+		Play Effect(All Players(All Teams), Ana Biotic Grenade No Healing Sound, Color(White), Event Player, 100);
+		Create Icon(All Players(All Teams), Event Player, Skull, Visible To and Position, Color(White), False);
+		Wait Until(Is Using Ultimate(Event Player) == False, 3);
+		Set Damage Dealt(Event Player, 100);
+		Destroy All Effects;
+		Destroy Icon(Last Created Entity);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Reinhardt: Frozen Tempest - Skin Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Blue), Event Player, 0.016, Visible To Position and Radius);
+		Wait(5, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+		Loop;
+	}
+}
+
+rule("Reinhardt: Charge - Knockdown Group")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Knocked Down, 2);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(White), Victim, 1, Visible To Position and Radius);
+		Wait(2, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+	}
+}
+
+rule("Reinhardt: Charge - Speed and Damage Scaling")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Invincible, 1);
+		Set Damage Dealt(Event Player, 50);
+		Set Move Speed(Event Player, 12);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 25);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 37);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 50);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 62);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 75);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 100);
+		Wait(0.250, Ignore Condition);
+		Set Move Speed(Event Player, 115);
+		Wait(0.250, Ignore Condition);
+		Set Damage Dealt(Event Player, 125);
+		Set Move Speed(Event Player, 175);
+		Wait Until(False, 1);
+		Set Move Speed(Event Player, 110);
+		Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Reinhardt: Flamestrike - Freeze Status")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Frozen, 2);
+		Set Status(Players Within Radius(Victim, 2, Team 2, Surfaces), Null, Frozen, 2);
+	}
+}
+
+rule("Reinhardt: Ult - Heal Cone")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ultimate);
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+	}
+
+	actions
+	{
+		Heal(Event Player, Event Player, Event Damage);
+	}
+}
+
+rule("Reinhardt: Ult - Epicenter")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is On Ground(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players Within Radius(Event Player, 20, Team 2,
+			Surfaces And All Barriers), 1, Visible To Position and Radius);
+		Apply Impulse(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)),
+			Surfaces And All Barriers), Altitude Of(Event Player) <= 3 && Absolute Value(Y Component Of(Position Of(Current Array Element))
+			- Y Component Of(Position Of(Event Player))) <= 3 && Current Array Element != Event Player), Up, 15, To Player,
+			Cancel Contrary Motion);
+		Set Status(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)),
+			Surfaces And All Barriers), Altitude Of(Event Player) <= 3 && Absolute Value(Y Component Of(Position Of(Current Array Element))
+			- Y Component Of(Position Of(Event Player))) <= 3 && Current Array Element != Event Player), Null, Knocked Down, 2.500);
+		Damage(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)), Surfaces And All Barriers),
+			Altitude Of(Event Player) <= 2 && Absolute Value(Y Component Of(Position Of(Current Array Element)) - Y Component Of(
+			Position Of(Event Player))) <= 3 && Current Array Element != Event Player && !Is In View Angle(Event Player,
+			Current Array Element, 50)), Event Player, 100);
+		Play Effect(All Players(All Teams), Doomfist Meteor Strike Impact Effect, Color(White), Position Of(Event Player)
+			+ World Vector Of(Vector(False, False, 3), Event Player, Rotation), 1);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+			3), Event Player, Rotation), 10);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+			3), Event Player, Rotation), 20);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+			3), Event Player, Rotation), 30);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+			3), Event Player, Rotation), 40);
+		Wait(3, Ignore Condition);
+	}
+}
+
+rule("Reinhardt: Primary Fire - Knockdown and Freeze Effect")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 0.300);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(White), Victim, 0.300, Visible To Position and Radius);
+		Wait(0.300, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Roadhog: Primary Fire - Stun on Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Is Meleeing(Event Player) == False;
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 1);
+	}
+}
+
+rule("Roadhog: Hook - Trace")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Hero Of(Event Player) == Hero(Roadhog);
+	}
+
+	actions
+	{
+		Skip If(Is Crouching(Event Player), 2);
+		Event Player.Roadhog_Chain = Position Of(Event Player) + Vector(0, 1.600, 0);
+		Skip(1);
+		Event Player.Roadhog_Chain = Position Of(Event Player) + Vector(0, 1.130, 0);
+		Abort If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * 21,
+			Enemy Barriers Block LOS));
+		Event Player.Roadhog_Chain_Trace = 0;
+		Event Player.Roadhog_Chain_Pull = 21;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 2);
+		Event Player.Roadhog_Chain_Pull = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip(1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 2);
+		Event Player.Roadhog_Chain_Pull = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip(1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 2);
+		Event Player.Roadhog_Chain_Pull = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip(1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 2);
+		Event Player.Roadhog_Chain_Pull = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip(1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 2);
+		Event Player.Roadhog_Chain_Pull = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip(1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Skip If(Is In Line of Sight(Event Player.Roadhog_Chain, Event Player.Roadhog_Chain + Facing Direction Of(Event Player) * ((
+			Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2), Enemy Barriers Block LOS), 1);
+		Event Player.Roadhog_Chain_Trace = (Event Player.Roadhog_Chain_Trace + Event Player.Roadhog_Chain_Pull) / 2;
+		Event Player.Roadhog_Chain_Target = Position Of(Event Player) + Facing Direction Of(Event Player)
+			* Event Player.Roadhog_Chain_Trace;
+		Event Player.Roadhog_Chain_Target_1 = True;
+		Event Player.Roadhog_Chain_Project = Total Time Elapsed + Event Player.Roadhog_Chain_Trace / 60 + 0.100;
+		Event Player.Roadhog_Chain_Target_2 = Event Player.Roadhog_Chain_Project;
+	}
+}
+
+rule("Roadhog: Hook - Abort pull on hit")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Hero Of(Event Player) == Hero(Roadhog);
+	}
+
+	actions
+	{
+		Event Player.Roadhog_Chain_Target_1 = False;
+	}
+}
+
+rule("Roadhog: Hook - Start Pull")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Roadhog_Chain_Target_1 == True;
+		Total Time Elapsed >= Event Player.Roadhog_Chain_Project;
+		Hero Of(Event Player) == Hero(Roadhog);
+	}
+
+	actions
+	{
+		Set Gravity(Event Player, 0);
+		Set Status(Event Player, Null, Rooted, 9999);
+		Event Player.Roadhog_Chain_Target_4 = Direction Towards(Position Of(Event Player), Event Player.Roadhog_Chain_Target);
+		Event Player.Roadhog_Chain_Target_4 = Direction Towards(Position Of(Event Player), Event Player.Roadhog_Chain_Target);
+		Wait(1, Ignore Condition);
+		Set Gravity(Event Player, 100);
+		Clear Status(Event Player, Rooted);
+	}
+}
+
+rule("Roadhog: Hook - End Pull")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Roadhog_Chain_Target_1 == True;
+		Total Time Elapsed >= Event Player.Roadhog_Chain_Project;
+		(Distance Between(Position Of(Event Player), Event Player.Roadhog_Chain_Target) <= 1 || Dot Product(
+			Event Player.Roadhog_Chain_Target_4, Direction Towards(Position Of(Event Player), Event Player.Roadhog_Chain_Target))
+			<= 0 || Total Time Elapsed - Event Player.Roadhog_Chain_Project > 0.500) == True;
+		Hero Of(Event Player) == Hero(Roadhog);
+	}
+
+	actions
+	{
+		Event Player.Roadhog_Chain_Target_1 = False;
+		Event Player.Roadhog_Chain_Target_3 = Total Time Elapsed + 0.170;
+		Event Player.Roadhog_Chain_Target_2 = Total Time Elapsed;
+		Set Gravity(Event Player, 100);
+		Clear Status(Event Player, Rooted);
+	}
+}
+
+rule("Roadhog: Hook - Pull")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Roadhog_Chain_Target_1 == True;
+		Total Time Elapsed >= Event Player.Roadhog_Chain_Target_2;
+		Hero Of(Event Player) == Hero(Roadhog);
+	}
+
+	actions
+	{
+		Event Player.Roadhog_Chain_Target_5 = Direction Towards(Position Of(Event Player), Event Player.Roadhog_Chain_Target);
+		Skip If(!Is On Ground(Event Player) || Y Component Of(Event Player.Roadhog_Chain_Target_5) >= 0, 1);
+		Event Player.Roadhog_Chain_Target_5 = Normalize(Event Player.Roadhog_Chain_Target_5 * Vector(1, 0, 1));
+		Event Player.Roadhog_Chain_Target_6 = Event Player.Roadhog_Chain_Target_5 * 40 - Velocity Of(Event Player);
+		Apply Impulse(Event Player, Normalize(Event Player.Roadhog_Chain_Target_6), Square Root(Dot Product(
+			Event Player.Roadhog_Chain_Target_6, Event Player.Roadhog_Chain_Target_6)), To World, Incorporate Contrary Motion);
+		Event Player.Roadhog_Chain_Target_2 = Total Time Elapsed + 0.050;
+	}
+}
+
+rule("Roadhog: Hook - Cooldown")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Roadhog), Team 1) == True;
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		Set Ability Cooldown(Event Player, Button(Ability 1), 16);
+	}
+}
+
+rule("Roadhog: Hook - Give Ammo")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Roadhog), Team 1) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Ammo(Event Player, 0, 1);
+	}
+}
+
+rule("Roadhog: Hook - Old Hook Pull")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Has Status(Victim, Stunned) == True;
+	}
+
+	actions
+	{
+		Wait(0.300, Ignore Condition);
+		If(Has Status(Victim, Stunned) != True);
+			Apply Impulse(Victim, Up, 2, To World, Cancel Contrary Motion);
+			Wait(0.016, Ignore Condition);
+			Apply Impulse(Victim, Direction Towards(Victim, Event Player), 35, To World, Incorporate Contrary Motion);
+	}
+}
+
+rule("Roadhog: Hook - Collision Victim")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Is Button Held(Event Player, Button(Ability 1)) == True;
+		Has Status(Victim, Stunned) == True;
+	}
+
+	actions
+	{
+		Wait(0.065, Ignore Condition);
+		If(Is In Air(Victim) == True);
+			Disable Movement Collision With Players(Victim);
+			Wait(1, Ignore Condition);
+			Enable Movement Collision With Players(Victim);
+	}
+}
+
+rule("Roadhog: Hook - Collision Eventplayer")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Is Button Held(Event Player, Button(Ability 1)) == True;
+		Has Status(Victim, Stunned) == True;
+	}
+
+	actions
+	{
+		Wait(0.260, Ignore Condition);
+		If(Is In Air(Event Player) == True);
+			Disable Movement Collision With Players(Victim);
+			Wait(1, Ignore Condition);
+			Enable Movement Collision With Players(Victim);
+	}
+}
+
+rule("Roadhog: Hook - Pull to Victim")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+		Is Button Held(Event Player, Button(Ability 1)) == True;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		While(Is Using Ability 1(Event Player));
+			Apply Impulse(Event Player, Direction Towards(Event Player, Victim), 25, To World, Cancel Contrary Motion);
+			Apply Impulse(Victim, Direction Towards(Victim, Event Player), 15, To World, Cancel Contrary Motion);
+			Wait(0.050, Ignore Condition);
+			If(Distance Between(Event Player, Victim) <= 3.500);
+				Break;
+			End;
+		End;
+		disabled Event Player.Roadhog_Hook_Velocity = Vector(0, 0, 0);
+		disabled Apply Impulse(Event Player, Vector(0, 0, 0), 0, To World, Cancel Contrary Motion);
+		disabled Apply Impulse(Event Player, Event Player.Roadhog_Hook_Velocity, Magnitude Of(Event Player.Roadhog_Hook_Velocity), To World,
+			Incorporate Contrary Motion);
+	}
+}
+
+rule("Roadhog: Breather - Heal over Time")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Roadhog), Team 1) == True;
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Healing Dealt(Event Player, 0);
+		Start Heal Over Time(Event Player, Event Player, 8, 100);
+		Create Effect(All Players(All Teams), Heal Target Active Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+		Wait(15.900, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+	}
+}
+
+disabled rule("Roadhog: Ult - Root on Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Roadhog;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ultimate);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Burning, 0.200);
+		Start Damage Over Time(Victim, Null, 1, 2);
+	}
+}
+
+rule("Roadhog: Ult - Slow on Damage")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Roadhog), Team 1) == True;
+		Is Using Ultimate(Players On Hero(Hero(Roadhog), Team 1)) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Velocity Of(Event Player), Speed Of(Event Player) * -1, To World, Incorporate Contrary Motion);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Sigma: Passive - Psychosis Levataion Float")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	actions
+	{
+		Set Gravity(Event Player, Absolute Value(1));
+	}
+}
+
+rule("Sigma: Passive - Psychosis Levataion Force Up")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Up, 10, 15, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Sigma: Passive - Psychosis Levataion Force Up Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Sigma: Passive - Psychosis Levataion Force Down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Down, 10, 20, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Sigma: Passive - Psychosis Levataion Force Down Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Sigma: Melee - Impluse")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Meleeing(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 15, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Sigma: Accretion - Psyker Debris Knock Down")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Knocked Down, 3);
+	}
+}
+
+rule("Sigma: Ult - De Wereld! Time Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Primary Fire Enabled(Event Player, False);
+		Set Ultimate Ability Enabled(Event Player, False);
+		Set Slow Motion(1);
+		Set Move Speed(Event Player, 750);
+		Set Gravity(Event Player, 200);
+		Set Status(All Living Players(Team 2), Null, Stunned, 0.600);
+		Big Message(All Players(All Teams), Custom String("{0} Time has Stopped {1}", Hero Icon String(Hero(Sigma)), Ability Icon String(
+			Hero(Sigma), Button(Ultimate))));
+		Pause Match Time;
+		Wait(0.600, Ignore Condition);
+		Set Slow Motion(100);
+		Set Move Speed(Event Player, 110);
+		Set Gravity(Event Player, 1);
+		Unpause Match Time;
+		Set Ultimate Ability Enabled(Event Player, True);
+		Set Primary Fire Enabled(Event Player, True);
+		Wait(1, Ignore Condition);
+		Event Player.Sigma_Using_Ult = False;
+	}
+}
+
+rule("Sigma: Ult - De Wereld! Effects")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Ultimate Charge Percent(Event Player) == 0;
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Sombra EMP Explosion Effect, Color(Team 1), Event Player, 1000);
+		Play Effect(All Players(All Teams), Sombra EMP Explosion Effect, Color(Team 2), Event Player, 1000);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Yellow), All Living Players(All Teams), 200);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Yellow), All Living Players(All Teams), 200);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Yellow), All Living Players(All Teams), 200);
+		Play Effect(All Players(All Teams), Debuff Impact Sound, Color(Yellow), All Living Players(All Teams), 200);
+	}
+}
+
+rule("Sigma: Ult - Knockdown on Stage 2")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Players On Hero(Hero(Sigma), Team 1)) == True;
+		Is Hero Being Played(Hero(Sigma), Team 1) == True;
+		Event Ability == Button(Ultimate);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Knocked Down, 3.800);
+		Set Projectile Speed(Players On Hero(Hero(Sigma), Team 1), 0);
+		Wait(3.800, Ignore Condition);
+		Set Projectile Speed(Players On Hero(Hero(Sigma), Team 1), 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Sombra: Passive - Steal Ult Charge")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Has Status(Event Player, Hacked) == True;
+		Is Using Ultimate(Players On Hero(Hero(Sombra), Team 1)) == False;
+		Ultimate Charge Percent(Players On Hero(Hero(Sombra), Team 1)) != 0;
+		Ability Cooldown(Players On Hero(Hero(Sombra), Team 1), Button(Secondary Fire)) > 11.900;
+	}
+
+	actions
+	{
+		Set Ultimate Charge(Players On Hero(Hero(Sombra), Team 1), Ultimate Charge Percent(Players On Hero(Hero(Sombra), Team 1)) + 25);
+		Set Ultimate Charge(Event Player, Ultimate Charge Percent(Event Player) - 25);
+		Wait(5, Ignore Condition);
+		Big Message(Event Player, Custom String("{0} Ult Charge Stolen! {1}", Hero Icon String(Hero(Sombra)), Ability Icon String(Hero(
+			Sombra), Button(Ultimate))));
+	}
+}
+
+rule("Sombra: Stealth - Unstealthing Cast Time")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.800, Abort When False);
+		Wait Until(!Is Using Ability 1(Event Player) || Is Button Held(Event Player, Button(Primary Fire)) || Is Button Held(Event Player,
+			Button(Ability 1)) || Is Button Held(Event Player, Button(Secondary Fire)) || Is Button Held(Event Player, Button(Ultimate))
+			|| Is Button Held(Event Player, Button(Melee)) || Is Communicating Any Emote(Event Player), 99999);
+		Cancel Primary Action(Event Player);
+	}
+}
+
+rule("Sombra: Clone - Speed Ground")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 150);
+		Set Gravity(Event Player, 75);
+		Set Jump Vertical Speed(Event Player, 150);
+	}
+}
+
+rule("Sombra: Clone - Speed Ground Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 115);
+		Set Gravity(Event Player, 100);
+		Set Jump Vertical Speed(Event Player, 100);
+	}
+}
+
+rule("Sombra: Backstab - Sombra 1 Shot")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Attacker) == False;
+		Array Contains(Players in View Angle(Victim, All Teams, 115), Attacker) == False;
+		Event Ability == Button(Melee);
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 120);
+	}
+}
+
+rule("Sombra: Suit Mkll - Trail")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Is Moving(Event Player) == True;
+		Is In Air(Event Player) == False;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Purple), Position Of(Event Player) + Up * 0.100, 0.500);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Purple), Position Of(Event Player) + Up * 0.100, 0.500);
+		Wait(0.100, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Sombra: Suit Mkll - Tracking Spark")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Is Moving(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Bad Explosion, Color(White), Position Of(Event Player) + Up * 0.100, 0.500);
+		Wait(2, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Sombra: Headshot! - Extra Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Event Was Critical Hit == True;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 20);
+	}
+}
+
+rule("Sombra: Suit Mkll - Sound 20ft")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Sombra Hacking Sound, Color(White), Event Player, 20, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Sombra Hacking Sound, Color(White), Event Player, 20, Visible To Position and Radius);
+		Wait Until(False, 99999);
+		Destroy All Effects;
+	}
+}
+
+rule("Sombra: Suit Mkll - Sound 15ft")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Sombra Hacking Sound, Color(White), Event Player, 15, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Sombra Hacking Sound, Color(White), Event Player, 15, Visible To Position and Radius);
+		Wait Until(False, 99999);
+		Destroy All Effects;
+	}
+}
+
+rule("Sombra: Suit Mkll - Sound 10ft")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Mercy Boost Beam Sound, Color(White), Event Player, 10, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Mercy Boost Beam Sound, Color(White), Event Player, 10, Visible To Position and Radius);
+		Wait Until(False, 99999);
+		Destroy All Effects;
+	}
+}
+
+rule("Sombra: Suit Mkll - Sound 5ft")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Echo Cloning Sound, Color(White), Event Player, 5, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Echo Cloning Sound, Color(White), Event Player, 5, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Sombra Hacked Sound, Color(White), Event Player, 5, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Sombra Hacked Sound, Color(White), Event Player, 5, Visible To Position and Radius);
+		Wait Until(False, 99999);
+		Destroy All Effects;
+	}
+}
+
+rule("Sombra: F E A R - Sombra Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Event Player, 15, Team 2, Off), Null, 100);
+		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Purple), Event Player, 15);
+		Play Effect(All Players(All Teams), Bad Explosion, Color(Purple), Event Player, 15);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Purple), Event Player, 15);
+		Start Facing(Players Within Radius(Event Player, 15, Team 2, Surfaces), Spawn Points(Team 1), -50, To Player,
+			Direction and Turn Rate);
+		Wait(1, Ignore Condition);
+		Stop Facing(All Players(Team 2));
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Torb: Passive - Molten Metal Burn Damage")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Torbjörn;
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Burning, 1);
+		Start Damage Over Time(Victim, Null, 1, 10);
+	}
+}
+
+rule("Torb: Passive - Molten Core Hammer")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Primary Fire);
+		Weapon(Event Player) == 2;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 45);
+		Set Status(Victim, Null, Knocked Down, 1.500);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 30, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Torb: Passive - Molten Core Unkillable")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Is Dead(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Abort When False);
+		Event Player.TorbKilled = 7;
+		Resurrect(Event Player);
+		Set Status(Event Player, Null, Unkillable, 7);
+		Set Damage Dealt(Event Player, 150);
+		Communicate(Event Player, Incoming);
+		Play Effect(All Players(All Teams), Bad Explosion, Color(Yellow), Event Player, 1);
+		Play Effect(All Players(All Teams), Bad Explosion, Color(Orange), Event Player, 1);
+		Play Effect(All Players(All Teams), Bad Explosion, Color(Red), Event Player, 1);
+		Create Effect(All Players(All Teams), Bad Aura, Color(Orange), Event Player, 1, Visible To Position and Radius);
+		Start Damage Over Time(Event Player, Null, 7, 300);
+		Set Status(Event Player, Null, Burning, 7);
+		Wait(7, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Yellow), Event Player, 1);
+		Kill(Event Player, Null);
+		Set Damage Dealt(Event Player, 100);
+		Destroy All Effects;
+		Wait(5, Ignore Condition);
+	}
+}
+
+rule("Torb: Passive - Molten Core Hud Text")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Event Player.TorbKilled == 7;
+	}
+
+	actions
+	{
+		Destroy Icon(Last Created Entity);
+		Destroy HUD Text(Last Text ID);
+		Event Player.TorbKilled = 7;
+		Create Icon(All Players(All Teams), Event Player, Fire, Visible To and Position, Color(Yellow), False);
+		Create HUD Text(Event Player, String("{0} - {1} - {2}", Hero Icon String(Hero(Torbjörn)), Custom String("Unkillable"),
+			Ability Icon String(Hero(Torbjörn), Button(Ultimate))), String("Time"), Event Player.TorbKilled, Top, 5, Color(Red), Color(
+			White), Color(Yellow), Visible To and String, Default Visibility);
+		Chase Player Variable Over Time(Event Player, TorbKilled, 0, 7, Destination and Duration);
+		Wait(7, Ignore Condition);
+		Destroy HUD Text(Last Text ID);
+		Destroy Icon(Last Created Entity);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Widowmaker:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Players On Hero(Hero(Widowmaker), Team 1)) == True;
+	}
+
+	actions
+	{
+		Start Forcing Player Outlines(Players On Hero(Hero(Widowmaker), Team 1), All Players(Team 2), True, Custom Color(1, 1, 1, 0),
+			Occluded);
+		Disable Nameplates(Players On Hero(Hero(Widowmaker), Team 1), All Players(Team 2));
+		Create Effect(All Players(Team 2), Sphere, Color(Black), Event Player, 30, Visible To Position and Radius);
+		Wait Until(Is Using Ultimate(Players On Hero(Hero(Widowmaker), Team 1)) == False, 15);
+		Destroy All Effects;
+		Start Forcing Player Outlines(Players On Hero(Hero(Widowmaker), Team 1), All Players(Team 2), True, Color(Team 1), Default);
+		Enable Nameplates(Event Player, All Players(All Teams));
+	}
+}
+
+rule("Widowmaker: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Widowmaker;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Ammo(Event Player, 0, 100000);
+		Wait Until(Is Using Ultimate(Players On Hero(Hero(Widowmaker), Team 1)) == False, 15);
+		Set Ammo(Event Player, 0, 20);
+	}
+}
+
+rule("Widowmaker:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Widowmaker;
+	}
+
+	conditions
+	{
+		Event Was Critical Hit == True;
+		Is Firing Secondary(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 100);
+	}
+}
+
+rule("Widowmaker:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Widowmaker;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 2);
+		Event Ability != Button(Primary Fire);
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Start Damage Over Time(Victim, Event Player, 20, 30);
+		Wait(5, Ignore Condition);
+		Create Effect(All Players(All Teams), Widowmaker Venom Mine Target Effect, Color(White), Victim, 1,
+			Visible To Position and Radius);
+		Wait(5, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+		Create Effect(All Players(All Teams), Widowmaker Venom Mine Target Effect, Color(White), Victim, 1,
+			Visible To Position and Radius);
+		Wait(5, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Reaper:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+	}
+}
+
+rule("Reaper:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(Team 2), Reaper Wraith Form Sound, Color(White), Event Player, 200);
+		Disable Movement Collision With Environment(Event Player, False);
+		Set Jump Vertical Speed(Event Player, 0);
+		Set Gravity(Event Player, 1);
+		Set Move Speed(Event Player, 150);
+		Wait Until(Is Using Ability 1(Event Player) == False, 3);
+		Enable Movement Collision With Environment(Event Player);
+		Set Move Speed(Event Player, 110);
+		Set Gravity(Event Player, 100);
+		Set Jump Vertical Speed(Event Player, 100);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Up")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Up, 10, 15, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Up Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Down, 10, 20, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Down Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Reaper: Shadow Step")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Phased Out, 2);
+		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
+		Wait(0.500, Ignore Condition);
+		Set Invisible(Event Player, All);
+		Wait(1, Ignore Condition);
+		Set Invisible(Event Player, None);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
+		Set Ammo(Event Player, 0, 2);
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 160);
+		Wait Until(Is Using Ultimate(Event Player) == False, 3);
+		Set Move Speed(Event Player, 110);
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Reaper_Ana_Bot = True;
+		Create Dummy Bot(Hero(Ana), Team 1, -1, Event Player, Down);
+		Wait Until(Is Alive(Event Player) == False, 1);
+		Destroy All Dummy Bots;
+		Event Player.Reaper_Ana_Bot = False;
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Ana;
+	}
+
+	conditions
+	{
+		Players On Hero(Hero(Reaper), Team 1).Reaper_Ana_Bot == True;
+		Is Hero Being Played(Hero(Reaper), Team 1) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
+		Set Projectile Speed(Event Player, 1);
+		Set Projectile Gravity(Event Player, 500);
+		Set Invisible(Event Player, All);
+		Set Status(Event Player, Null, Phased Out, 1);
+		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ability 2));
+		Wait Until(Is Alive(Event Player) == False, 0.900);
+		Kill(Event Player, Null);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Pharah: Primary Fire - Recoil on fire")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Backward, 12, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Pharah: Jump Jets - Apply Impluse at Crosshair")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 10.200, To World, Incorporate Contrary Motion);
+		Wait(0.050, Ignore Condition);
+		Apply Impulse(Event Player, Facing Direction Of(Event Player), 35, To World, Incorporate Contrary Motion);
+	}
+}
+
+rule("Pharah: Jump Jets - Knock Down on Ability 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Hero Of(Event Player) == Hero(Pharah);
+		Is Using Ability 1(Event Player) == True;
+		Is Button Held(Event Player, Button(Interact)) == False;
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Loop If(Is On Ground(Event Player) != True);
+		Set Status(Filtered Array(Players Within Radius(Position Of(Event Player), 10, Opposite Team Of(Team Of(Event Player)), Off),
+			Is On Ground(Current Array Element) == True), Null, Knocked Down, 1);
+		Play Effect(All Players(All Teams), Winston Jump Pack Landing Effect, Color(Team 1), Event Player, 2);
+		Play Effect(All Players(Team 2), Ring Explosion, Color(Team 1), Event Player, 10);
+		Play Effect(All Players(All Teams), Doomfist Rising Uppercut Impact Sound, Color(Red), Eye Position(Event Player), 100);
+	}
+}
+
+rule("Pharah: Ult - Ult Project Speed and Damage Buff")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 500);
+		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Team 1), Event Player, 2);
+		Play Effect(All Players(All Teams), Explosion Sound, Color(Team 1), Event Player, 20);
+		Set Damage Dealt(Event Player, 155);
+		Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
+		Set Projectile Speed(Event Player, 125);
+		Set Damage Dealt(Event Player, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To Player, Incorporate Contrary Motion);
+		Wait(0.600, Ignore Condition);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Secondary Fire);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 1);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Firing Secondary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 160);
+		Set Damage Received(Event Player, 50);
+		Create Effect(All Players(All Teams), Ashe Dynamite Burning Material Effect, Color(White), Event Player, 1,
+			Visible To Position and Radius);
+		Wait Until(Is Firing Secondary(Event Player) == False, 2);
+		Apply Impulse(Event Player, Forward, 200, To Player, Incorporate Contrary Motion);
+		Set Move Speed(Event Player, 110);
+		Destroy Effect(Last Created Entity);
+		Set Damage Received(Event Player, 100);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Earned Elimination;
+		Team 1;
+		Doomfist;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
+		Press Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("Doomfist: Ult - Effects")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 8, Visible To Position and Radius);
+		Wait(1.500, Ignore Condition);
+		Destroy All Effects;
+	}
+}
+
+rule("Doomfist: Ult - Damage Buff")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 145);
+		Wait(1.500, Ignore Condition);
+		If(Is Using Ultimate(Event Player) == False);
+			Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Doomfist: Ult - Damage Revert")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Wait(2, Abort When False);
+		Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Event Damage > 55;
+		Event Damage < 75;
+		Distance Between(Attacker, Victim) <= 5;
+		Event Ability != Button(Secondary Fire);
+		Event Ability != Button(Ability 1);
+		Event Ability != Button(Ability 2);
+		Event Ability != Button(Melee);
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Sigma: Ult - Impluse up")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Sigma), Team 1) == True;
+		Event Ability == Button(Ultimate);
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
+		Wait(2.800, Ignore Condition);
+		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
+		Apply Impulse(Event Player, Up, 25, To Player, Incorporate Contrary Motion);
+		Apply Impulse(Event Player, Vector(Random Integer(-45, 45), 25, Random Integer(-45, 45)), 25, To Player,
+			Incorporate Contrary Motion);
+	}
+}
+
+rule("Winston: 40k+ Volts - Knock Down Auto Attack")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Knocked Down, 0.200);
+		Apply Impulse(Victim, Vector(0, 0.100, -3.500), 10, To Player, Cancel Contrary Motion);
+	}
+}
+
+rule("Winston: Heavy Handed - Knock down")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Victim, Vector(0, 1.200, -3.500), 10, To Player, Cancel Contrary Motion);
+		Set Status(Victim, Null, Asleep, 1);
+		Wait(1, Ignore Condition);
+	}
+}
+
+rule("Winston")
+{
+	event
+	{
+		Player Earned Elimination;
+		Team 1;
+		Winston;
+	}
+
+	actions
+	{
+		Set Ability Cooldown(Event Player, Button(Ability 1), 0);
+	}
+}
+
+rule("Winston")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 150);
+		Start Heal Over Time(Event Player, Event Player, 9999, 5);
+	}
+}
+
+rule("Winston")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Facing Direction Of(Event Player), 20, To World, Incorporate Contrary Motion);
+	}
+}
+
+rule("Winston")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Winston;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 20, To World, Incorporate Contrary Motion);
+		Wait(1.900, Ignore Condition);
+	}
+}
+
+rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 1)) == True;
+		Ability Cooldown(Event Player, Button(Ability 1)) == 0;
+		Is Dummy Bot(Event Player) == False;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+		Set Ability Cooldown(Event Player, Button(Ability 1), 30);
+		Wait(0.050, Ignore Condition);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Start Forcing Dummy Bot Name(Event Player, Custom String("{0}", Event Player));
+	}
+}
+
+rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
+		Set Status(Event Player, Null, Phased Out, 9999);
+		Set Damage Dealt(Event Player, 75);
+		Set Ability Cooldown(Event Player, Button(Ability 1), 0);
+		Set Invisible(Event Player, All);
+		Press Button(Event Player, Button(Ability 1));
+		Wait(0.250, Ignore Condition);
+		Set Gravity(Event Player, 0);
+		Apply Impulse(Event Player, Up, 35, To Player, Cancel Contrary Motion);
+		Set Projectile Gravity(Event Player, 50000);
+	}
+}
+
+rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Torb_Passive_Destory_Bots = 0;
+		Disallow Button(Event Player, Button(Ability 1));
+		Start Assist(Players In Slot(0, Team 1), All Players(Team 2), Assisters and Targets);
+	}
+}
+
+rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Event Player.Torb_Passive_Destory_Bots == 1;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+	}
+}
+
+rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 2) == 0;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+	}
+}
+
+rule("Rule 173")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Event Player.Apex_Heal_Ledge == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Brigitte Repair Pack Impact Effect, Color(Team 1), Position Of(Event Player) + Up * 1, 1);
+		Play Effect(All Players(All Teams), Brigitte Repair Pack Armor Effect, Color(Team 1), Position Of(Event Player) + Up * 1, 1);
+		Play Effect(All Players(All Teams), Reaper Wraith Form Sound, Color(Team 1), Position Of(Event Player) + Up * 0.100, 400);
+		Play Effect(All Players(All Teams), Reaper Wraith Form Sound, Color(Team 1), Position Of(Event Player) + Up * 0.100, 400);
+		Wait(2, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Sigma: Passive - High Density Gravity")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Ring, Color(Blue), Event Player, 10, Visible To Position and Radius);
+	}
+}
+
+rule("Sigma: Pssive - Gravity Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		All;
+		Sigma;
+	}
+
+	conditions
+	{
+		Is Alive(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Gravity(Players Within Radius(Event Player, 10, Team 2, Off), 0);
+	}
+}
+
+rule("Rule 179")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Sigma), Team 1) == True;
+		Distance Between(Event Player, Players On Hero(Hero(Sigma), Team 1)) > 10;
+	}
+
+	actions
+	{
+		Set Gravity(Event Player, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Rule 195")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Orisa;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 2)) == True;
+		Ability Cooldown(Event Player, Button(Ability 2)) == 0;
+	}
+
+	actions
+	{
+		Set Primary Fire Enabled(Event Player, False);
+		Set Projectile Speed(Event Player, 100);
+		Wait(0.250, Ignore Condition);
+		Set Primary Fire Enabled(Event Player, True);
+	}
+}
+
+rule("Rule 195")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Orisa;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+		Ability Cooldown(Event Player, Button(Secondary Fire)) == 0;
+	}
+
+	actions
+	{
+		Set Primary Fire Enabled(Event Player, False);
+		Set Projectile Speed(Event Player, 100);
+		Wait(0.200, Ignore Condition);
+		Set Primary Fire Enabled(Event Player, True);
+	}
+}
+
+rule("Orisa: Overcharged - Fire Rate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Orisa;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 9999);
+		Wait(0.026, Abort When False);
+		Set Projectile Speed(Event Player, 10000);
+		Wait(0.026, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Zayra:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Global.Zayra_Gravity == True;
+	}
+
+	actions
+	{
+		Set Gravity(Players Within Radius(Event Player, 2.500, Team 2, Surfaces), 0);
+		Apply Impulse(All Living Players(Team 2), Up, 0.500, To World, Incorporate Contrary Motion);
+		Apply Impulse(All Living Players(Team 2), Direction Towards(Event Player, Player Closest To Reticle(Event Player, Team 2)), -1.500,
+			To World, Incorporate Contrary Motion);
+		Wait(0.036, Ignore Condition);
+		Loop If Condition Is True;
+		Set Gravity(All Living Players(Team 2), 100);
+	}
+}
+
+rule("Zayra: Blast Jump - Force")
+{
+	event
+	{
+		Player Took Damage;
+		All;
+		Zarya;
+	}
+
+	conditions
+	{
+		Attacker == Event Player;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Vector(-1.250 * X Component Of(Facing Direction Of(Event Player)), Y Component Of(Facing Direction Of(
+			Event Player)) * -1.250, Z Component Of(Facing Direction Of(Event Player)) * -1.250), 5, To World,
+			Incorporate Contrary Motion);
+	}
+}
+
+rule("Zarya: Gravity Chamber - Main")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+		Global.Zayra_Gravity == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Eye Position(Event Player), 15, Opposite Team Of(Team Of(Event Player)), Off), Event Player, 0.100);
+		Wait(0.016, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Zarya: Gravity Chamber - Effect")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Attacker) == True;
+		Global.Zayra_Gravity == True;
+	}
+
+	actions
+	{
+		Create Beam Effect(All Players(All Teams), Bad Beam, Victim, Attacker, Color(Purple), None);
+		Apply Impulse(Victim, Vector(Speed Of In Direction(Victim, Left), Speed Of In Direction(Victim, Up), Speed Of In Direction(Victim,
+			Forward)) * -1, 0.001, To World, Cancel Contrary Motion);
+		Apply Impulse(Victim, Direction Towards(Eye Position(Victim), Eye Position(Attacker)), Distance Between(Eye Position(Attacker),
+			Eye Position(Victim)) * 4, To World, Cancel Contrary Motion);
+		Wait(0.050, Ignore Condition);
+		Loop If Condition Is True;
+		Destroy All Effects;
+	}
+}
+
+rule("Zarya: Gravity Chamber - Variable")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Global.Zayra_Gravity = False;
+	}
+}
+
+rule("Zarya: Gravity Chamber - Ability 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 2)) == True;
+	}
+
+	actions
+	{
+		Global.Zayra_Gravity = True;
+		Set Ability Cooldown(Event Player, Button(Ability 1), 0);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ability 1));
+		Set Ability Cooldown(Event Player, Button(Ability 2), 10);
+		Set Ability Cooldown(Event Player, Button(Ability 1), 2);
+		Wait(10, Ignore Condition);
+	}
+}
+
+rule("Zarya: Gravity Chamber - Ability 2")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zarya;
+	}
+
+	conditions
+	{
+		Global.Zayra_Gravity == True;
+	}
+
+	actions
+	{
+		Wait(2, Ignore Condition);
+		Global.Zayra_Gravity = False;
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Bastion: Overcharged - Fire Rate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Bastion;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 9999);
+		Wait(0.026, Abort When False);
+		Set Projectile Speed(Event Player, 10000);
+		Wait(0.026, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Soldier 76: Blood Mist - Invisible")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 150);
+		Set Invisible(Event Player, All);
+	}
+}
+
+rule("Soldier 76: Blood Mist - Invisible end")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 115);
+		Set Invisible(Event Player, None);
+	}
+}
+
+rule("Soldier 76: Blood Rush - Ult Heal")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Heal(Event Player, Event Player, 5);
+	}
+}
+
+rule("Soldier 76: Blood Rush - Ult Projectile Speed")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 9999);
+		Wait(0.026, Abort When False);
+		Set Projectile Speed(Event Player, 10000);
+		Wait(0.026, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Soldier 76: Blood Rush - Ult Projectile Speed end")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 200);
+	}
+}
+
+rule("Soldier 76: Undead Pressence - Mist Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Cloud, Color(Red), Position Of(Event Player) + Up * 0.300, 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Cloud, Color(Red), Position Of(Event Player) + Up * 0.300, 1, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+	}
+}
+
+rule("Soldier 76: Undead Pressence - Mist Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Red), Position Of(Event Player) + Up * 0.100, 1.500);
+		Wait(1, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Soldier 76: Larger Casing - Rocket Charges")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Secondary Fire)) == True;
+	}
+
+	actions
+	{
+		Wait(0.025, Ignore Condition);
+		Set Ability Cooldown(Event Player, Button(Secondary Fire), 0);
+		Wait(0.350, Ignore Condition);
+		Press Button(Event Player, Button(Secondary Fire));
+		Wait(18, Ignore Condition);
+	}
+}
+
+rule("Soldier 76: Primary Fire - Lifesteal")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Heal(Event Player, Null, 1);
+	}
+}
+
+disabled rule("Rule 164")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 2)) == True;
+		Is Dummy Bot(Event Player) == False;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+		Set Ability Cooldown(Event Player, Button(Ability 2), 15);
+		Wait(0.050, Ignore Condition);
+		Create Dummy Bot(Hero(Baptiste), Team 1, -1, Event Player, Down);
+		Wait(15, Ignore Condition);
+	}
+}
+
+disabled rule("Soldier 76: Blood Rush - Ult Heal")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Baptiste;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+	}
+
+	actions
+	{
+		Disable Movement Collision With Players(Event Player);
+		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
+		Set Projectile Gravity(Event Player, 500);
+		Set Status(Event Player, Null, Phased Out, 9999);
+		Set Invisible(Event Player, All);
+		Attach Players(Event Player, Closest Player To(Event Player, Team 1), Vector(0, 1, 0));
+		Wait(0.250, Ignore Condition);
+		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
+		Press Button(Event Player, Button(Ability 2));
+		Set Gravity(Event Player, 0);
+		Detach Players(Event Player);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Event Player, Up, 35, To Player, Cancel Contrary Motion);
+	}
+}
+
+disabled rule("Apex: Bots - Destory Bots if Team 2 is Dead")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 2) == 0;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+	}
+}
+
+rule("Rule 225")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Cloud, Color(Red), Position Of(Victim) + Up * 0.300, 1, Visible To Position and Radius);
+		Event Player.Soldier76_Dot_Effect = Last Created Entity;
+		Set Healing Received(Victim, 60);
+		Start Damage Over Time(Victim, Null, 10, 10);
+		Start Heal Over Time(Event Player, Event Player, 10, 10);
+		Wait(10, Ignore Condition);
+		Destroy Effect(Event Player.Soldier76_Dot_Effect);
+		Start Damage Over Time(Victim, Null, 1, 50);
+		Set Healing Received(Victim, 100);
+	}
+}
+
+rule("Rule 225")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Small Message(Victim, Custom String("Damage over Time"));
+		Big Message(Victim, Custom String("{0} Healing Reduced {0}", Hero Icon String(Hero(Soldier: 76))));
+		Create Icon(All Players(All Teams), Victim, Plus, Visible To and Position, Color(White), False);
+		Create Icon(All Players(All Teams), Victim, X, Visible To and Position, Color(Red), False);
+		Create Effect(All Players(All Teams), Cloud, Color(Blue), Position Of(Victim) + Up * 0.300, 1, Visible To Position and Radius);
+		Wait(10, Ignore Condition);
+		Destroy Effect(Last Created Entity);
+		Destroy All Icons;
+	}
+}
+
+rule("Rule 227")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Soldier: 76;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Damage Over Time(Event Player, Null, 9999, 15);
+		Event Player.Soldier76_Dot_Sprint = Last Damage Over Time ID;
+		Wait Until(Is Using Ability 1(Event Player) == False, 99999);
+		Stop Damage Over Time(Event Player.Soldier76_Dot_Sprint);
+	}
+}
+
+rule("Dva:")
+{
+	event
+	{
+		Player Dealt Knockback;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 1);
+		Set Gravity(Victim, 0);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 7.500, To World, Incorporate Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 5, To Player, Incorporate Contrary Motion);
+		Set Gravity(Victim, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}

@@ -1,13 +1,21 @@
 variables
 {
 	global:
+		1: Temp_Players
+		2: Temp_Index
+		3: Temp_Player
 		4: Zayra_Gravity
+		27: Lucio_Ult_Time_Started
+		28: Lucio_Ult_Effects
 		31: SmokePOS
 		32: SmokeActive
 
 	player:
+		0: Apex_General_Hero_HUD
 		1: Third_Person_Camera
 		2: Genji_Ult_Choice_Path
+		3: Apex_Array_HUD
+		4: Apex_General_HUD
 		5: Roadhog_Chain_Target_1
 		6: Roadhog_Chain_Target_2
 		7: Roadhog_Chain_Target_3
@@ -18,6 +26,8 @@ variables
 		26: Roadhog_Chain_Target
 		27: Roadhog_Chain_Project
 		28: Talent3
+		29: Tracer_Jump
+		30: Tracer_Double
 		31: Roadhog_Chain
 		32: Roadhog_Chain_Trace
 		33: Roadhog_Chain_Pull
@@ -36,6 +46,11 @@ variables
 		72: Soldier76_Dot_Sprint
 }
 
+subroutines
+{
+	0: Apex_HUD
+}
+
 rule("Apex: Death - Respawn Apex from Fall")
 {
 	event
@@ -48,7 +63,6 @@ rule("Apex: Death - Respawn Apex from Fall")
 	conditions
 	{
 		Event Was Environment == True;
-		Is Hero Being Played(Hero(Torbjörn), Team 1) == False;
 		Number Of Living Players(Team 2) >= 4;
 	}
 
@@ -61,6 +75,8 @@ rule("Apex: Death - Respawn Apex from Fall")
 		Wait(0.025, Ignore Condition);
 		Respawn(Event Player);
 		Wait(0.025, Ignore Condition);
+		Disallow Button(Event Player, Button(Primary Fire));
+		Disallow Button(Event Player, Button(Secondary Fire));
 		Disallow Button(Event Player, Button(Ability 1));
 		Disallow Button(Event Player, Button(Ability 2));
 		Disallow Button(Event Player, Button(Ultimate));
@@ -74,6 +90,8 @@ rule("Apex: Death - Respawn Apex from Fall")
 		Allow Button(Event Player, Button(Ability 1));
 		Allow Button(Event Player, Button(Ability 2));
 		Allow Button(Event Player, Button(Ultimate));
+		Allow Button(Event Player, Button(Primary Fire));
+		Allow Button(Event Player, Button(Secondary Fire));
 	}
 }
 
@@ -88,7 +106,7 @@ rule("Apex: Spawn Bot")
 
 	conditions
 	{
-		Is Meleeing(Event Player) == True;
+		Is Button Held(Event Player, Button(Melee)) == True;
 		Is Button Held(Event Player, Button(Crouch)) == True;
 		Is Button Held(Event Player, Button(Jump)) == True;
 	}
@@ -117,10 +135,12 @@ rule("Apex: Reload - Game Start")
 	{
 		Wait(0.100, Ignore Condition);
 		Set Ammo(Event Player, 0, 0);
+		Set Objective Description(All Living Players(Team 1), Custom String("Kill the Hunters"), Visible To and String);
+		Set Objective Description(All Living Players(Team 2), Custom String("Hunt the Apex"), Visible To and String);
 	}
 }
 
-rule("Apex: Teammate Helath and Ult Hud")
+rule("Apex: Teammate Health and Ult Hud")
 {
 	event
 	{
@@ -144,83 +164,6 @@ rule("Apex: Teammate Helath and Ult Hud")
 			: Custom String("{0}%", Ultimate Charge Percent(Event Player))), Left, 0, Health(Event Player) >= Max Health(Event Player)
 			/ 2 ? Color(Sky Blue) : Color(Red), Color(White), Health(Event Player) >= Max Health(Event Player) / 2 ? Color(White) : Color(
 			Red), Visible To String and Color, Default Visibility);
-	}
-}
-
-rule("Apex: Team 2 - Ult Damage Bonus")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 2;
-		All;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Pharah), Team 2) && Is Using Ultimate(Event Player));
-			Set Projectile Speed(Event Player, 200);
-			Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
-			Set Projectile Speed(Event Player, 100);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(McCree), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Wait Until(Is Using Ultimate(Event Player) == False, 6.200);
-			Set Damage Dealt(Event Player, 125);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Reaper), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Set Move Speed(Event Player, 150);
-			Wait Until(Is Using Ultimate(Event Player) == False, 3);
-			Set Move Speed(Event Player, 105);
-			Set Damage Dealt(Event Player, 125);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Soldier: 76), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Wait Until(Is Using Ultimate(Event Player) == False, 6);
-			Set Damage Dealt(Event Player, 125);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Genji), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Wait Until(Is Using Ultimate(Event Player) == False, 6);
-			Set Damage Dealt(Event Player, 125);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Hanzo), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Wait(7.500, Ignore Condition);
-			Set Damage Dealt(Event Player, 150);
-		End;
-		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Doomfist), Team 2) && Is Using Ultimate(Event Player));
-			Set Damage Dealt(Event Player, 200);
-			Wait(5, Ignore Condition);
-			Set Damage Dealt(Event Player, 150);
-		End;
-	}
-}
-
-rule("Apex: Objective")
-{
-	event
-	{
-		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Is In Spawn Room(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Objective Description(All Living Players(Team 1), Custom String("Kill the Hunters"), Visible To and String);
-		Set Objective Description(All Living Players(Team 2), Custom String("Hunt the Apex"), Visible To and String);
 	}
 }
 
@@ -296,6 +239,7 @@ rule("Apex: Text - Hunted Text")
 		Big Message(Victim, String("Hunted"));
 		Big Message(All Living Players(Team 2), Custom String("Hunter Down"));
 		Communicate(All Living Players(Team 2), Group Up);
+		Play Effect(All Players(All Teams), Hanzo Sonic Arrow Initial Pulse Effect, Color(Blue), Victim, 15);
 	}
 }
 
@@ -304,53 +248,19 @@ rule("Apex: Text - Hunt Text")
 	event
 	{
 		Ongoing - Each Player;
-		All;
-		All;
-	}
-
-	conditions
-	{
-		Has Spawned(Event Player) == True;
-	}
-
-	actions
-	{
-		Big Message(Event Player, String("Hunt"));
-	}
-}
-
-rule("Apex: Text - Hunt Text 2")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 2;
-		All;
-	}
-
-	conditions
-	{
-		Has Spawned(Event Player) == True;
-	}
-
-	actions
-	{
-		Big Message(Event Player, String("Hunt"));
-	}
-}
-
-rule("Apex: Text - Killing Effect")
-{
-	event
-	{
-		Player Dealt Final Blow;
 		Team 1;
 		All;
 	}
 
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
 	actions
 	{
-		Play Effect(All Players(All Teams), Hanzo Sonic Arrow Initial Pulse Effect, Color(Blue), Victim, 15);
+		Big Message(All Living Players(All Teams), String("Hunt"));
+		Wait(9999, Ignore Condition);
 	}
 }
 
@@ -454,6 +364,26 @@ rule("Apex:  First Person - Camera")
 		Stop Camera(Event Player);
 		Wait(0.250, Ignore Condition);
 		Event Player.Third_Person_Camera = False;
+	}
+}
+
+rule("Apex: Team 2 - HOT")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Heal Over Time(Event Player, Null, 9999, 2.500);
 	}
 }
 
@@ -778,58 +708,6 @@ disabled rule("")
 	}
 }
 
-rule("Ana: Ult - Bot")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Ana;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Event Player.Ana_Widowmaker_Bot = True;
-		Create Dummy Bot(Hero(Widowmaker), Team 1, -1, Spawn Points(Team 2), Event Player);
-		Wait Until(Is Alive(Event Player) == False, 8);
-		Destroy All Dummy Bots;
-		Event Player.Ana_Widowmaker_Bot = False;
-	}
-}
-
-rule("Ana: Ult - Bot Spawn")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Widowmaker;
-	}
-
-	conditions
-	{
-		Players On Hero(Hero(Ana), Team 1).Ana_Widowmaker_Bot == True;
-		Is Hero Being Played(Hero(Ana), Team 1) == True;
-	}
-
-	actions
-	{
-		Start Forcing Dummy Bot Name(Event Player, Custom String("Nano Boost"));
-		Set Invisible(Event Player, All);
-		Set Status(Event Player, Null, Phased Out, 8);
-		Set Ultimate Charge(Event Player, 100);
-		Wait(0.016, Ignore Condition);
-		Press Button(Event Player, Button(Ultimate));
-		Wait Until(Is Alive(Event Player) == False, 7.900);
-		Kill(Event Player, Null);
-	}
-}
-
 rule("Ana: Sleep - Knockback")
 {
 	event
@@ -897,11 +775,371 @@ rule("Ana: Sleep - Sleeping Effect")
 	}
 }
 
+rule("Ana: Ult - Bot")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Ana;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is Hero Being Played(Hero(Doomfist), Team 1) == False;
+	}
+
+	actions
+	{
+		Event Player.Ana_Widowmaker_Bot = True;
+		Create Dummy Bot(Hero(Widowmaker), Team 1, -1, Spawn Points(Team 2), Event Player);
+		Wait Until(Is Alive(Event Player) == False, 8);
+		Destroy All Dummy Bots;
+		Event Player.Ana_Widowmaker_Bot = False;
+	}
+}
+
+rule("Ana: Ult - Bot Spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Widowmaker;
+	}
+
+	conditions
+	{
+		Players On Hero(Hero(Ana), Team 1).Ana_Widowmaker_Bot == True;
+		Is Hero Being Played(Hero(Ana), Team 1) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("Nano Boost"));
+		Set Invisible(Event Player, All);
+		Set Status(Event Player, Null, Phased Out, 8);
+		Set Ultimate Charge(Event Player, 100);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ultimate));
+		Wait Until(Is Alive(Event Player) == False, 7.900);
+		Kill(Event Player, Null);
+	}
+}
+
+rule("Bastion: Overcharged - Fire Rate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Bastion;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 9999);
+		Wait(0.026, Abort When False);
+		Set Projectile Speed(Event Player, 10000);
+		Wait(0.026, Abort When False);
+		Loop If Condition Is True;
+	}
+}
+
 disabled rule("")
 {
 	event
 	{
 		Ongoing - Global;
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 15, To Player, Incorporate Contrary Motion);
+		Wait(0.600, Ignore Condition);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Secondary Fire);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 1);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Firing Secondary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 160);
+		Set Damage Received(Event Player, 50);
+		Create Effect(All Players(All Teams), Ashe Dynamite Burning Material Effect, Color(White), Event Player, 1,
+			Visible To Position and Radius);
+		Wait Until(Is Firing Secondary(Event Player) == False, 2);
+		Apply Impulse(Event Player, Forward, 200, To Player, Incorporate Contrary Motion);
+		Set Move Speed(Event Player, 110);
+		Destroy Effect(Last Created Entity);
+		Set Damage Received(Event Player, 100);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Earned Elimination;
+		Team 1;
+		Doomfist;
+	}
+
+	actions
+	{
+		Wait(1, Ignore Condition);
+		Set Ultimate Charge(Event Player, 100);
+		Press Button(Event Player, Button(Ultimate));
+	}
+}
+
+rule("Doomfist: Ult - Effects")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 2, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 8, Visible To Position and Radius);
+		Wait(1.500, Ignore Condition);
+		Destroy All Effects;
+	}
+}
+
+rule("Doomfist: Ult - Damage Buff")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+		Is Hero Being Played(Hero(Doomfist), Team 1) == True;
+	}
+
+	actions
+	{
+		Set Damage Dealt(Event Player, 145);
+		Wait(1.500, Ignore Condition);
+		If(Is Using Ultimate(Event Player) == False);
+			Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Doomfist: Ult - Damage Revert")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == False;
+	}
+
+	actions
+	{
+		Wait Until(Is Using Ultimate(Event Player) == False, 2);
+		Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Doomfist:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Doomfist;
+	}
+
+	conditions
+	{
+		Event Damage > 55;
+		Event Damage < 75;
+		Distance Between(Attacker, Victim) <= 5;
+		Event Ability != Button(Secondary Fire);
+		Event Ability != Button(Ability 1);
+		Event Ability != Button(Ability 2);
+		Event Ability != Button(Melee);
+		Event Ability != Button(Ultimate);
+	}
+
+	actions
+	{
+		Damage(Victim, Null, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Dva: Passive - Eject Mech")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == False;
+		Is Button Held(Event Player, Button(Reload)) == True;
+	}
+
+	actions
+	{
+		Damage(Event Player, Null, 10000);
+	}
+}
+
+rule("Dva: Passive - Pilot Moveset")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Set Damage Dealt(Event Player, 280);
+		Set Max Ammo(Event Player, 0, 9);
+		Set Ammo(Event Player, 0, 9);
+		Set Move Speed(Event Player, 105);
+		Set Projectile Speed(Event Player, 250);
+	}
+}
+
+rule("Dva: Passive - Pilot Gun Fire Rate")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == True;
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Primary Fire Enabled(Event Player, False);
+		Wait(0.190, Ignore Condition);
+		Set Primary Fire Enabled(Event Player, True);
+		Loop If Condition Is True;
+		Set Primary Fire Enabled(Event Player, True);
+	}
+}
+
+rule("Dva: Passive - Mech Moveset")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		(Is In Alternate Form(Event Player) == True) == False;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Set Damage Dealt(Event Player, 50);
+		Set Move Speed(Event Player, 115);
+		Set Projectile Speed(Event Player, 100);
 	}
 }
 
@@ -945,6 +1183,54 @@ rule("Dva: Primary Fire - Movespeed Bonus for Mech")
 		Set Move Speed(Event Player, 130);
 		Wait Until(Is Firing Primary(Event Player) == False, 240);
 		Set Move Speed(Event Player, 115);
+	}
+}
+
+rule("Dva: Boosters - Cancel Boost")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Wait(0.050, Ignore Condition);
+		Press Button(Event Player, Button(Ability 1));
+		Wait(0.050, Ignore Condition);
+		Press Button(Event Player, Button(Ability 1));
+	}
+}
+
+rule("Dva: Boosters - Knock Back")
+{
+	event
+	{
+		Player Dealt Knockback;
+		Team 1;
+		D.Va;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Ability 1);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 1);
+		Set Gravity(Victim, 0);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 7.500, To World, Incorporate Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 5, To Player, Incorporate Contrary Motion);
+		Set Gravity(Victim, 100);
 	}
 }
 
@@ -1045,123 +1331,6 @@ rule("Dva: Ult - Nuclear Option")
 		Set Damage Dealt(Event Player, 100);
 		Set Primary Fire Enabled(Event Player, True);
 		Set Melee Enabled(Event Player, True);
-	}
-}
-
-rule("Dva: Boosters - Cancel Boost")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		D.Va;
-	}
-
-	conditions
-	{
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Wait(0.050, Ignore Condition);
-		Press Button(Event Player, Button(Ability 1));
-		Wait(0.050, Ignore Condition);
-		Press Button(Event Player, Button(Ability 1));
-	}
-}
-
-rule("Dva: Passive - Eject Mech")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		D.Va;
-	}
-
-	conditions
-	{
-		(Is In Alternate Form(Event Player) == True) == False;
-		Is Button Held(Event Player, Button(Reload)) == True;
-	}
-
-	actions
-	{
-		Damage(Event Player, Null, 10000);
-	}
-}
-
-rule("Dva: Passive - Pilot Moveset")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		D.Va;
-	}
-
-	conditions
-	{
-		(Is In Alternate Form(Event Player) == True) == True;
-	}
-
-	actions
-	{
-		Wait(0.050, Ignore Condition);
-		Set Damage Dealt(Event Player, 280);
-		Set Max Ammo(Event Player, 0, 9);
-		Set Ammo(Event Player, 0, 9);
-		Set Move Speed(Event Player, 105);
-		Set Projectile Speed(Event Player, 250);
-	}
-}
-
-rule("Dva: Passive - Pilot Gun Fire Rate")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		D.Va;
-	}
-
-	conditions
-	{
-		(Is In Alternate Form(Event Player) == True) == True;
-		Is Firing Primary(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Primary Fire Enabled(Event Player, False);
-		Wait(0.190, Ignore Condition);
-		Set Primary Fire Enabled(Event Player, True);
-		Loop If Condition Is True;
-		Set Primary Fire Enabled(Event Player, True);
-	}
-}
-
-rule("Dva: Passive - Mech Moveset")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		D.Va;
-	}
-
-	conditions
-	{
-		(Is In Alternate Form(Event Player) == True) == False;
-	}
-
-	actions
-	{
-		Wait(0.050, Ignore Condition);
-		Set Damage Dealt(Event Player, 50);
-		Set Move Speed(Event Player, 115);
-		Set Projectile Speed(Event Player, 100);
 	}
 }
 
@@ -1476,124 +1645,6 @@ rule("Genji: Smoke Bomb - Hud Text Melee")
 		Wait(0.250, Ignore Condition);
 		Create HUD Text(Event Player, String("{0}: {1}", Input Binding String(Button(Melee)), Custom String("Melee for Smoke Bomb")), Null,
 			Null, Left, 1, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
-	}
-}
-
-rule("Genji: Smoke Bomb - Smoke Global and Effect")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Genji;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Melee)) == True;
-		Global.SmokeActive == False;
-		Event Player.Talent3 == True;
-	}
-
-	actions
-	{
-		Global.SmokeActive = True;
-		Global.SmokePOS = Position Of(Event Player);
-		Create Effect(All Players(Team 1), Ring, Color(Lime Green), Global.SmokePOS, 14, Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
-			Visible To Position and Radius);
-		Set Invisible(Event Player, All);
-		Wait(7, Ignore Condition);
-		Destroy All Effects;
-		Global.SmokeActive = False;
-		Set Invisible(Event Player, None);
-		Wait(20, Ignore Condition);
 	}
 }
 
@@ -2236,8 +2287,6 @@ rule("Mccree: Flash Bang -  Effect")
 	{
 		Wait(0.016, Ignore Condition);
 		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
-		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
-		Create Effect(Event Player, Sphere, Color(White), Position Of(Event Player) + Up * 2, 2, Visible To Position and Radius);
 		Loop If(Has Status(Event Player, Stunned));
 		Destroy All Effects;
 	}
@@ -2327,7 +2376,355 @@ disabled rule("")
 	}
 }
 
-rule("Reinhardt: Frozen Tempest - Skin Effect")
+rule("Pharah: Primary Fire - Recoil on fire")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Firing Primary(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Backward, 12, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Pharah: Jump Jets - Apply Impluse at Crosshair")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 10.200, To World, Incorporate Contrary Motion);
+		Wait(0.050, Ignore Condition);
+		Apply Impulse(Event Player, Facing Direction Of(Event Player), 35, To World, Incorporate Contrary Motion);
+	}
+}
+
+rule("Pharah: Jump Jets - Knock Down on Ability 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Hero Of(Event Player) == Hero(Pharah);
+		Is Using Ability 1(Event Player) == True;
+		Is Button Held(Event Player, Button(Interact)) == False;
+	}
+
+	actions
+	{
+		Wait(0.100, Ignore Condition);
+		Loop If(Is On Ground(Event Player) != True);
+		Set Status(Filtered Array(Players Within Radius(Position Of(Event Player), 10, Opposite Team Of(Team Of(Event Player)), Off),
+			Is On Ground(Current Array Element) == True), Null, Knocked Down, 1);
+		Play Effect(All Players(All Teams), Winston Jump Pack Landing Effect, Color(Team 1), Event Player, 2);
+		Play Effect(All Players(Team 2), Ring Explosion, Color(Team 1), Event Player, 10);
+		Play Effect(All Players(All Teams), Doomfist Rising Uppercut Impact Sound, Color(Red), Eye Position(Event Player), 100);
+	}
+}
+
+rule("Pharah: Ult - Ult Project Speed and Damage Buff")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Pharah;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Projectile Speed(Event Player, 500);
+		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Team 1), Event Player, 2);
+		Play Effect(All Players(All Teams), Explosion Sound, Color(Team 1), Event Player, 20);
+		Set Damage Dealt(Event Player, 155);
+		Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
+		Set Projectile Speed(Event Player, 125);
+		Set Damage Dealt(Event Player, 100);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Reaper:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
+	}
+}
+
+rule("Reaper:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(Team 2), Reaper Wraith Form Sound, Color(White), Event Player, 200);
+		Disable Movement Collision With Environment(Event Player, False);
+		Set Jump Vertical Speed(Event Player, 0);
+		Set Gravity(Event Player, 1);
+		Set Move Speed(Event Player, 150);
+		Wait Until(Is Using Ability 1(Event Player) == False, 3);
+		Enable Movement Collision With Environment(Event Player);
+		Set Move Speed(Event Player, 110);
+		Set Gravity(Event Player, 100);
+		Set Jump Vertical Speed(Event Player, 100);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Up")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Up, 10, 15, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Up Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Jump)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Down")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == True;
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Accelerating(Event Player, Down, 10, 20, To Player, Direction Rate and Max Speed);
+	}
+}
+
+rule("Reaper: Psychosis Levataion - Force Down Stop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Crouch)) == False;
+	}
+
+	actions
+	{
+		Stop Accelerating(Event Player);
+	}
+}
+
+rule("Reaper: Shadow Step")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Status(Event Player, Null, Phased Out, 2);
+		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
+		Wait(0.500, Ignore Condition);
+		Set Invisible(Event Player, All);
+		Wait(1, Ignore Condition);
+		Set Invisible(Event Player, None);
+		Wait(0.040, Ignore Condition);
+		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
+		Set Ammo(Event Player, 0, 2);
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 160);
+		Wait Until(Is Using Ultimate(Event Player) == False, 3);
+		Set Move Speed(Event Player, 110);
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reaper;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Reaper_Ana_Bot = True;
+		Create Dummy Bot(Hero(Ana), Team 1, -1, Event Player, Down);
+		Wait Until(Is Alive(Event Player) == False, 1);
+		Destroy All Dummy Bots;
+		Event Player.Reaper_Ana_Bot = False;
+	}
+}
+
+rule("Reaper: Ult")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Ana;
+	}
+
+	conditions
+	{
+		Players On Hero(Hero(Reaper), Team 1).Reaper_Ana_Bot == True;
+		Is Hero Being Played(Hero(Reaper), Team 1) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
+		Set Projectile Speed(Event Player, 1);
+		Set Projectile Gravity(Event Player, 500);
+		Set Invisible(Event Player, All);
+		Set Status(Event Player, Null, Phased Out, 1);
+		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
+		Wait(0.016, Ignore Condition);
+		Press Button(Event Player, Button(Ability 2));
+		Wait Until(Is Alive(Event Player) == False, 0.900);
+		Kill(Event Player, Null);
+	}
+}
+
+disabled rule("")
+{
+	event
+	{
+		Ongoing - Global;
+	}
+}
+
+rule("Reinhardt: Passive - Skin Effect")
 {
 	event
 	{
@@ -2343,10 +2740,34 @@ rule("Reinhardt: Frozen Tempest - Skin Effect")
 
 	actions
 	{
-		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Blue), Event Player, 0.016, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Mei Frozen Effect, Color(Blue), Event Player, 0.016, Visible To Position and Radius);
 		Wait(5, Ignore Condition);
 		Destroy Effect(Last Created Entity);
 		Loop;
+	}
+}
+
+rule("Reinhardt: Primary Fire - Knockdown and Freeze Effect")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
+		Event Ability == Button(Primary Fire);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 0.300);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(White), Victim, 0.300, Visible To Position and Radius);
+		Wait(0.300, Ignore Condition);
+		Destroy All Effects;
 	}
 }
 
@@ -2370,7 +2791,7 @@ rule("Reinhardt: Charge - Knockdown Group")
 		Set Status(Victim, Null, Knocked Down, 2);
 		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(White), Victim, 1, Visible To Position and Radius);
 		Wait(2, Ignore Condition);
-		Destroy Effect(Last Created Entity);
+		Destroy All Effects;
 	}
 }
 
@@ -2414,6 +2835,29 @@ rule("Reinhardt: Charge - Speed and Damage Scaling")
 		Wait Until(False, 1);
 		Set Move Speed(Event Player, 110);
 		Set Damage Dealt(Event Player, 125);
+	}
+}
+
+rule("Reinhardt: Charge - Charge Effects")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Reinhardt;
+	}
+
+	conditions
+	{
+		Is Using Ability 1(Event Player) == True;
+	}
+
+	actions
+	{
+		Play Effect(All Players(Team 2), Bad Explosion, Color(Sky Blue), Position Of(Event Player) + Up * 0.500, 1);
+		Play Effect(All Players(Team 2), Bad Explosion, Color(White), Position Of(Event Player) + Up * 0.500, 1);
+		Wait(0.100, Ignore Condition);
+		Loop If Condition Is True;
 	}
 }
 
@@ -2477,58 +2921,69 @@ rule("Reinhardt: Ult - Epicenter")
 
 	actions
 	{
-		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players Within Radius(Event Player, 20, Team 2,
-			Surfaces And All Barriers), 1, Visible To Position and Radius);
+		Set Status(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)),
+			Surfaces And Enemy Barriers), Altitude Of(Event Player) <= 3 && Absolute Value(Y Component Of(Position Of(
+			Current Array Element)) - Y Component Of(Position Of(Event Player))) <= 3 && Current Array Element != Event Player), Null,
+			Knocked Down, 2.500);
 		Apply Impulse(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)),
 			Surfaces And All Barriers), Altitude Of(Event Player) <= 3 && Absolute Value(Y Component Of(Position Of(Current Array Element))
 			- Y Component Of(Position Of(Event Player))) <= 3 && Current Array Element != Event Player), Up, 15, To Player,
 			Cancel Contrary Motion);
-		Set Status(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)),
-			Surfaces And All Barriers), Altitude Of(Event Player) <= 3 && Absolute Value(Y Component Of(Position Of(Current Array Element))
-			- Y Component Of(Position Of(Event Player))) <= 3 && Current Array Element != Event Player), Null, Knocked Down, 2.500);
 		Damage(Filtered Array(Players Within Radius(Event Player, 20, Opposite Team Of(Team Of(Event Player)), Surfaces And All Barriers),
 			Altitude Of(Event Player) <= 2 && Absolute Value(Y Component Of(Position Of(Current Array Element)) - Y Component Of(
 			Position Of(Event Player))) <= 3 && Current Array Element != Event Player && !Is In View Angle(Event Player,
 			Current Array Element, 50)), Event Player, 100);
-		Play Effect(All Players(All Teams), Doomfist Meteor Strike Impact Effect, Color(White), Position Of(Event Player)
+		Play Effect(All Players(All Teams), Doomfist Meteor Strike Impact Effect, Color(Team 1), Position Of(Event Player)
 			+ World Vector Of(Vector(False, False, 3), Event Player, Rotation), 1);
 		Wait(0.040, Ignore Condition);
-		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+		Play Effect(All Players(All Teams), Ring Explosion, Color(White), Position Of(Event Player) + World Vector Of(Vector(False, False,
 			3), Event Player, Rotation), 10);
 		Wait(0.040, Ignore Condition);
-		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
-			3), Event Player, Rotation), 20);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Sky Blue), Position Of(Event Player) + World Vector Of(Vector(False,
+			False, 3), Event Player, Rotation), 20);
 		Wait(0.040, Ignore Condition);
-		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
+		Play Effect(All Players(All Teams), Ring Explosion, Color(White), Position Of(Event Player) + World Vector Of(Vector(False, False,
 			3), Event Player, Rotation), 30);
 		Wait(0.040, Ignore Condition);
-		Play Effect(All Players(All Teams), Ring Explosion, Color(Orange), Position Of(Event Player) + World Vector Of(Vector(False, False,
-			3), Event Player, Rotation), 40);
+		Play Effect(All Players(All Teams), Ring Explosion, Color(Sky Blue), Position Of(Event Player) + World Vector Of(Vector(False,
+			False, 3), Event Player, Rotation), 40);
 		Wait(3, Ignore Condition);
 	}
 }
 
-rule("Reinhardt: Primary Fire - Knockdown and Freeze Effect")
+rule("Reinhardt: Ult - Effects")
 {
 	event
 	{
-		Player Dealt Damage;
+		Ongoing - Each Player;
 		Team 1;
 		Reinhardt;
 	}
 
 	conditions
 	{
-		Is Hero Being Played(Hero(Reinhardt), Team 1) == True;
-		Event Ability == Button(Primary Fire);
+		Is Using Ultimate(Event Player) == True;
+		Is On Ground(Event Player) == True;
 	}
 
 	actions
 	{
-		Set Status(Victim, Null, Stunned, 0.300);
-		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(White), Victim, 0.300, Visible To Position and Radius);
-		Wait(0.300, Ignore Condition);
-		Destroy Effect(Last Created Entity);
+		Play Effect(All Players(Team 2), Bad Explosion, Color(Sky Blue), Event Player, 3);
+		Play Effect(All Players(Team 2), Bad Explosion, Color(White), Event Player, 3);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(0, Team 2), 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(1, Team 2), 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(2, Team 2), 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(3, Team 2), 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(4, Team 2), 1,
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Mei Frozen Effect, Color(Team 1), Players In Slot(5, Team 2), 1,
+			Visible To Position and Radius);
+		Wait(2.600, Ignore Condition);
+		Destroy All Effects;
 	}
 }
 
@@ -2905,7 +3360,7 @@ rule("Roadhog: Breather - Heal over Time")
 	}
 }
 
-disabled rule("Roadhog: Ult - Root on Damage")
+rule("Roadhog: Ult - Root on Damage")
 {
 	event
 	{
@@ -2926,7 +3381,7 @@ disabled rule("Roadhog: Ult - Root on Damage")
 	}
 }
 
-rule("Roadhog: Ult - Slow on Damage")
+disabled rule("Roadhog: Ult - Slow on Damage")
 {
 	event
 	{
@@ -3050,28 +3505,6 @@ rule("Sigma: Passive - Psychosis Levataion Force Down Stop")
 	}
 }
 
-rule("Sigma: Melee - Impluse")
-{
-	event
-	{
-		Player Dealt Damage;
-		Team 1;
-		Sigma;
-	}
-
-	conditions
-	{
-		Is Meleeing(Event Player) == True;
-	}
-
-	actions
-	{
-		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 15, To World, Cancel Contrary Motion);
-		Wait(0.016, Ignore Condition);
-		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
-	}
-}
-
 rule("Sigma: Accretion - Psyker Debris Knock Down")
 {
 	event
@@ -3089,6 +3522,32 @@ rule("Sigma: Accretion - Psyker Debris Knock Down")
 	actions
 	{
 		Set Status(Victim, Null, Knocked Down, 3);
+	}
+}
+
+rule("Sigma: Ult - Impluse up")
+{
+	event
+	{
+		Player Took Damage;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Hero Being Played(Hero(Sigma), Team 1) == True;
+		Event Ability == Button(Ultimate);
+	}
+
+	actions
+	{
+		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
+		Wait(2.800, Ignore Condition);
+		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
+		Apply Impulse(Event Player, Up, 25, To Player, Incorporate Contrary Motion);
+		Apply Impulse(Event Player, Vector(Random Integer(-45, 45), 25, Random Integer(-45, 45)), 25, To Player,
+			Incorporate Contrary Motion);
 	}
 }
 
@@ -3202,7 +3661,7 @@ rule("Sombra: Passive - Steal Ult Charge")
 		Has Status(Event Player, Hacked) == True;
 		Is Using Ultimate(Players On Hero(Hero(Sombra), Team 1)) == False;
 		Ultimate Charge Percent(Players On Hero(Hero(Sombra), Team 1)) != 0;
-		Ability Cooldown(Players On Hero(Hero(Sombra), Team 1), Button(Secondary Fire)) > 11.900;
+		Ability Cooldown(Players On Hero(Hero(Sombra), Team 1), Button(Secondary Fire)) > 7.900;
 	}
 
 	actions
@@ -3235,6 +3694,7 @@ rule("Sombra: Stealth - Unstealthing Cast Time")
 		Wait Until(!Is Using Ability 1(Event Player) || Is Button Held(Event Player, Button(Primary Fire)) || Is Button Held(Event Player,
 			Button(Ability 1)) || Is Button Held(Event Player, Button(Secondary Fire)) || Is Button Held(Event Player, Button(Ultimate))
 			|| Is Button Held(Event Player, Button(Melee)) || Is Communicating Any Emote(Event Player), 99999);
+		Wait(0.100, Ignore Condition);
 		Cancel Primary Action(Event Player);
 	}
 }
@@ -3283,7 +3743,7 @@ rule("Sombra: Clone - Speed Ground Stop")
 	}
 }
 
-rule("Sombra: Backstab - Sombra 1 Shot")
+rule("Sombra: Melee - Backstab Effect")
 {
 	event
 	{
@@ -3302,10 +3762,11 @@ rule("Sombra: Backstab - Sombra 1 Shot")
 	actions
 	{
 		Damage(Victim, Null, 120);
+		Set Status(Victim, Null, Knocked Down, 2.500);
 	}
 }
 
-rule("Sombra: Suit Mkll - Trail")
+disabled rule("Sombra: Suit Mkll - Trail")
 {
 	event
 	{
@@ -3330,7 +3791,7 @@ rule("Sombra: Suit Mkll - Trail")
 	}
 }
 
-rule("Sombra: Suit Mkll - Tracking Spark")
+disabled rule("Sombra: Suit Mkll - Tracking Spark")
 {
 	event
 	{
@@ -3369,7 +3830,7 @@ rule("Sombra: Headshot! - Extra Damage")
 
 	actions
 	{
-		Damage(Victim, Null, 20);
+		Damage(Victim, Null, 10);
 	}
 }
 
@@ -3467,7 +3928,7 @@ rule("Sombra: Suit Mkll - Sound 5ft")
 	}
 }
 
-rule("Sombra: F E A R - Sombra Ult")
+rule("Sombra: Ult - Effects")
 {
 	event
 	{
@@ -3483,14 +3944,35 @@ rule("Sombra: F E A R - Sombra Ult")
 
 	actions
 	{
-		Damage(Players Within Radius(Event Player, 15, Team 2, Off), Null, 100);
 		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Purple), Event Player, 15);
 		Play Effect(All Players(All Teams), Bad Explosion, Color(Purple), Event Player, 15);
 		Play Effect(All Players(All Teams), Ring Explosion, Color(Purple), Event Player, 15);
-		Start Facing(Players Within Radius(Event Player, 15, Team 2, Surfaces), Spawn Points(Team 1), -50, To Player,
-			Direction and Turn Rate);
-		Wait(1, Ignore Condition);
-		Stop Facing(All Players(Team 2));
+		Wait(5, Ignore Condition);
+	}
+}
+
+rule("Sombra: Ult - Damage")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Sombra;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Global.Temp_Players = Players Within Radius(Event Player, 15, Team 2, Off);
+		For Global Variable(Temp_Index, 0, Count Of(Global.Temp_Players), 1);
+			Global.Temp_Player = Global.Temp_Players[Global.Temp_Index];
+			Damage(Global.Temp_Player, Event Player, 0.750 * Max Health(Global.Temp_Player));
+		End;
+		Wait(5, Ignore Condition);
 	}
 }
 
@@ -3502,7 +3984,7 @@ disabled rule("")
 	}
 }
 
-rule("Torb: Passive - Molten Metal Burn Damage")
+rule("Torbjorn: Passive - Molten Metal Burn Damage")
 {
 	event
 	{
@@ -3518,7 +4000,7 @@ rule("Torb: Passive - Molten Metal Burn Damage")
 	}
 }
 
-rule("Torb: Passive - Molten Core Hammer")
+rule("Torbjorn: Passive - Molten Core Hammer")
 {
 	event
 	{
@@ -3543,7 +4025,7 @@ rule("Torb: Passive - Molten Core Hammer")
 	}
 }
 
-rule("Torb: Passive - Molten Core Unkillable")
+rule("Torbjorn: Passive - Molten Core Unkillable")
 {
 	event
 	{
@@ -3581,7 +4063,7 @@ rule("Torb: Passive - Molten Core Unkillable")
 	}
 }
 
-rule("Torb: Passive - Molten Core Hud Text")
+rule("Torbjorn: Passive - Molten Core Hud Text")
 {
 	event
 	{
@@ -3608,6 +4090,127 @@ rule("Torb: Passive - Molten Core Hud Text")
 		Wait(7, Ignore Condition);
 		Destroy HUD Text(Last Text ID);
 		Destroy Icon(Last Created Entity);
+	}
+}
+
+rule("Torbjorn:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 1)) == True;
+		Ability Cooldown(Event Player, Button(Ability 1)) == 0;
+		Is Dummy Bot(Event Player) == False;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+		Set Ability Cooldown(Event Player, Button(Ability 1), 30);
+		Wait(0.050, Ignore Condition);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
+		Start Forcing Dummy Bot Name(Event Player, Custom String("{0}", Event Player));
+	}
+}
+
+rule("Torbjorn:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Is Dummy Bot(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
+		Set Status(Event Player, Null, Phased Out, 9999);
+		Set Damage Dealt(Event Player, 75);
+		Set Ability Cooldown(Event Player, Button(Ability 1), 0);
+		Set Invisible(Event Player, All);
+		Press Button(Event Player, Button(Ability 1));
+		Wait(0.250, Ignore Condition);
+		Set Gravity(Event Player, 0);
+		Apply Impulse(Event Player, Up, 35, To Player, Cancel Contrary Motion);
+		Set Projectile Gravity(Event Player, 50000);
+	}
+}
+
+rule("Torbjorn:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Torb_Passive_Destory_Bots = 0;
+		Disallow Button(Event Player, Button(Ability 1));
+		Start Assist(Players In Slot(0, Team 1), All Players(Team 2), Assisters and Targets);
+	}
+}
+
+rule("Torbjorn:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Event Player.Torb_Passive_Destory_Bots == 1;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
+	}
+}
+
+rule("Torbjorn:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Torbjörn;
+	}
+
+	conditions
+	{
+		Number Of Living Players(Team 2) == 0;
+		Is Game In Progress == True;
+	}
+
+	actions
+	{
+		Destroy All Dummy Bots;
 	}
 }
 
@@ -3728,567 +4331,6 @@ disabled rule("")
 	}
 }
 
-rule("Reaper:")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Has Spawned(Event Player) == True;
-	}
-
-	actions
-	{
-		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
-		Create Effect(All Players(Team 2), Reaper Wraith Form Effect, Color(Team 1), Event Player, 1, Visible To Position and Radius);
-	}
-}
-
-rule("Reaper:")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Play Effect(All Players(Team 2), Reaper Wraith Form Sound, Color(White), Event Player, 200);
-		Disable Movement Collision With Environment(Event Player, False);
-		Set Jump Vertical Speed(Event Player, 0);
-		Set Gravity(Event Player, 1);
-		Set Move Speed(Event Player, 150);
-		Wait Until(Is Using Ability 1(Event Player) == False, 3);
-		Enable Movement Collision With Environment(Event Player);
-		Set Move Speed(Event Player, 110);
-		Set Gravity(Event Player, 100);
-		Set Jump Vertical Speed(Event Player, 100);
-	}
-}
-
-rule("Reaper: Psychosis Levataion - Force Up")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Jump)) == True;
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Start Accelerating(Event Player, Up, 10, 15, To Player, Direction Rate and Max Speed);
-	}
-}
-
-rule("Reaper: Psychosis Levataion - Force Up Stop")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Jump)) == False;
-	}
-
-	actions
-	{
-		Stop Accelerating(Event Player);
-	}
-}
-
-rule("Reaper: Psychosis Levataion - Force Down")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Crouch)) == True;
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Start Accelerating(Event Player, Down, 10, 20, To Player, Direction Rate and Max Speed);
-	}
-}
-
-rule("Reaper: Psychosis Levataion - Force Down Stop")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Crouch)) == False;
-	}
-
-	actions
-	{
-		Stop Accelerating(Event Player);
-	}
-}
-
-rule("Reaper: Shadow Step")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Using Ability 2(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Status(Event Player, Null, Phased Out, 2);
-		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
-		Wait(0.500, Ignore Condition);
-		Set Invisible(Event Player, All);
-		Wait(1, Ignore Condition);
-		Set Invisible(Event Player, None);
-		Wait(0.040, Ignore Condition);
-		Play Effect(All Players(All Teams), Moira Fade Reappear Effect, Color(White), Event Player, 1);
-		Set Ammo(Event Player, 0, 2);
-	}
-}
-
-rule("Reaper: Ult")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Move Speed(Event Player, 160);
-		Wait Until(Is Using Ultimate(Event Player) == False, 3);
-		Set Move Speed(Event Player, 110);
-	}
-}
-
-rule("Reaper: Ult")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Reaper;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Event Player.Reaper_Ana_Bot = True;
-		Create Dummy Bot(Hero(Ana), Team 1, -1, Event Player, Down);
-		Wait Until(Is Alive(Event Player) == False, 1);
-		Destroy All Dummy Bots;
-		Event Player.Reaper_Ana_Bot = False;
-	}
-}
-
-rule("Reaper: Ult")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Ana;
-	}
-
-	conditions
-	{
-		Players On Hero(Hero(Reaper), Team 1).Reaper_Ana_Bot == True;
-		Is Hero Being Played(Hero(Reaper), Team 1) == True;
-	}
-
-	actions
-	{
-		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
-		Set Projectile Speed(Event Player, 1);
-		Set Projectile Gravity(Event Player, 500);
-		Set Invisible(Event Player, All);
-		Set Status(Event Player, Null, Phased Out, 1);
-		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
-		Wait(0.016, Ignore Condition);
-		Press Button(Event Player, Button(Ability 2));
-		Wait Until(Is Alive(Event Player) == False, 0.900);
-		Kill(Event Player, Null);
-	}
-}
-
-disabled rule("")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-}
-
-rule("Pharah: Primary Fire - Recoil on fire")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Pharah;
-	}
-
-	conditions
-	{
-		Is Firing Primary(Event Player) == True;
-	}
-
-	actions
-	{
-		Apply Impulse(Event Player, Backward, 12, To Player, Incorporate Contrary Motion);
-	}
-}
-
-rule("Pharah: Jump Jets - Apply Impluse at Crosshair")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Pharah;
-	}
-
-	conditions
-	{
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Apply Impulse(Event Player, Up, 10.200, To World, Incorporate Contrary Motion);
-		Wait(0.050, Ignore Condition);
-		Apply Impulse(Event Player, Facing Direction Of(Event Player), 35, To World, Incorporate Contrary Motion);
-	}
-}
-
-rule("Pharah: Jump Jets - Knock Down on Ability 1")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Pharah;
-	}
-
-	conditions
-	{
-		Hero Of(Event Player) == Hero(Pharah);
-		Is Using Ability 1(Event Player) == True;
-		Is Button Held(Event Player, Button(Interact)) == False;
-	}
-
-	actions
-	{
-		Wait(0.100, Ignore Condition);
-		Loop If(Is On Ground(Event Player) != True);
-		Set Status(Filtered Array(Players Within Radius(Position Of(Event Player), 10, Opposite Team Of(Team Of(Event Player)), Off),
-			Is On Ground(Current Array Element) == True), Null, Knocked Down, 1);
-		Play Effect(All Players(All Teams), Winston Jump Pack Landing Effect, Color(Team 1), Event Player, 2);
-		Play Effect(All Players(Team 2), Ring Explosion, Color(Team 1), Event Player, 10);
-		Play Effect(All Players(All Teams), Doomfist Rising Uppercut Impact Sound, Color(Red), Eye Position(Event Player), 100);
-	}
-}
-
-rule("Pharah: Ult - Ult Project Speed and Damage Buff")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Pharah;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Projectile Speed(Event Player, 500);
-		Play Effect(All Players(All Teams), Bad Pickup Effect, Color(Team 1), Event Player, 2);
-		Play Effect(All Players(All Teams), Explosion Sound, Color(Team 1), Event Player, 20);
-		Set Damage Dealt(Event Player, 155);
-		Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
-		Set Projectile Speed(Event Player, 125);
-		Set Damage Dealt(Event Player, 100);
-	}
-}
-
-disabled rule("")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-}
-
-rule("Doomfist:")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Is Using Ability 1(Event Player) == True;
-	}
-
-	actions
-	{
-		Apply Impulse(Event Player, Up, 15, To Player, Incorporate Contrary Motion);
-		Wait(0.600, Ignore Condition);
-	}
-}
-
-rule("Doomfist:")
-{
-	event
-	{
-		Player Dealt Damage;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Event Ability == Button(Secondary Fire);
-	}
-
-	actions
-	{
-		Set Status(Victim, Null, Stunned, 1);
-	}
-}
-
-rule("Doomfist:")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Is Firing Secondary(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Move Speed(Event Player, 160);
-		Set Damage Received(Event Player, 50);
-		Create Effect(All Players(All Teams), Ashe Dynamite Burning Material Effect, Color(White), Event Player, 1,
-			Visible To Position and Radius);
-		Wait Until(Is Firing Secondary(Event Player) == False, 2);
-		Apply Impulse(Event Player, Forward, 200, To Player, Incorporate Contrary Motion);
-		Set Move Speed(Event Player, 110);
-		Destroy Effect(Last Created Entity);
-		Set Damage Received(Event Player, 100);
-	}
-}
-
-rule("Doomfist:")
-{
-	event
-	{
-		Player Earned Elimination;
-		Team 1;
-		Doomfist;
-	}
-
-	actions
-	{
-		Wait(1, Ignore Condition);
-		Set Ultimate Charge(Event Player, 100);
-		Press Button(Event Player, Button(Ultimate));
-	}
-}
-
-rule("Doomfist: Ult - Effects")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 2, Visible To Position and Radius);
-		Create Effect(All Players(All Teams), Light Shaft, Color(Blue), Eye Position(Event Player), 8, Visible To Position and Radius);
-		Wait(1.500, Ignore Condition);
-		Destroy All Effects;
-	}
-}
-
-rule("Doomfist: Ult - Damage Buff")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == True;
-	}
-
-	actions
-	{
-		Set Damage Dealt(Event Player, 145);
-		Wait(1.500, Ignore Condition);
-		If(Is Using Ultimate(Event Player) == False);
-			Set Damage Dealt(Event Player, 125);
-	}
-}
-
-rule("Doomfist: Ult - Damage Revert")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Is Using Ultimate(Event Player) == False;
-	}
-
-	actions
-	{
-		Wait(2, Abort When False);
-		Set Damage Dealt(Event Player, 125);
-	}
-}
-
-rule("Doomfist:")
-{
-	event
-	{
-		Player Dealt Damage;
-		Team 1;
-		Doomfist;
-	}
-
-	conditions
-	{
-		Event Damage > 55;
-		Event Damage < 75;
-		Distance Between(Attacker, Victim) <= 5;
-		Event Ability != Button(Secondary Fire);
-		Event Ability != Button(Ability 1);
-		Event Ability != Button(Ability 2);
-		Event Ability != Button(Melee);
-	}
-
-	actions
-	{
-		Damage(Victim, Null, 100);
-	}
-}
-
-disabled rule("")
-{
-	event
-	{
-		Ongoing - Global;
-	}
-}
-
-rule("Sigma: Ult - Impluse up")
-{
-	event
-	{
-		Player Took Damage;
-		Team 2;
-		All;
-	}
-
-	conditions
-	{
-		Is Hero Being Played(Hero(Sigma), Team 1) == True;
-		Event Ability == Button(Ultimate);
-	}
-
-	actions
-	{
-		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
-		Wait(2.800, Ignore Condition);
-		Play Effect(All Players(All Teams), Sigma Hypersphere Implosion Effect, Color(Team 1), Victim, 1);
-		Apply Impulse(Event Player, Up, 25, To Player, Incorporate Contrary Motion);
-		Apply Impulse(Event Player, Vector(Random Integer(-45, 45), 25, Random Integer(-45, 45)), 25, To Player,
-			Incorporate Contrary Motion);
-	}
-}
-
 rule("Winston: 40k+ Volts - Knock Down Auto Attack")
 {
 	event
@@ -4306,8 +4348,9 @@ rule("Winston: 40k+ Volts - Knock Down Auto Attack")
 
 	actions
 	{
-		Set Status(Victim, Null, Knocked Down, 0.200);
-		Apply Impulse(Victim, Vector(0, 0.100, -3.500), 10, To Player, Cancel Contrary Motion);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 5, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 0.050, To Player, Incorporate Contrary Motion);
 	}
 }
 
@@ -4327,7 +4370,9 @@ rule("Winston: Heavy Handed - Knock down")
 
 	actions
 	{
-		Apply Impulse(Victim, Vector(0, 1.200, -3.500), 10, To Player, Cancel Contrary Motion);
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 10, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
 		Set Status(Victim, Null, Asleep, 1);
 		Wait(1, Ignore Condition);
 	}
@@ -4412,128 +4457,15 @@ rule("Winston")
 	}
 }
 
-rule("Rule 164")
+disabled rule("")
 {
 	event
 	{
-		Ongoing - Each Player;
-		Team 1;
-		Torbjörn;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Ability 1)) == True;
-		Ability Cooldown(Event Player, Button(Ability 1)) == 0;
-		Is Dummy Bot(Event Player) == False;
-	}
-
-	actions
-	{
-		Destroy All Dummy Bots;
-		Set Ability Cooldown(Event Player, Button(Ability 1), 30);
-		Wait(0.050, Ignore Condition);
-		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
-		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
-		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
-		Create Dummy Bot(Hero(Torbjörn), Team 1, -1, Event Player, Down);
-		Start Forcing Dummy Bot Name(Event Player, Custom String("{0}", Event Player));
+		Ongoing - Global;
 	}
 }
 
-rule("Rule 164")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Torbjörn;
-	}
-
-	conditions
-	{
-		Is Dummy Bot(Event Player) == True;
-	}
-
-	actions
-	{
-		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
-		Set Status(Event Player, Null, Phased Out, 9999);
-		Set Damage Dealt(Event Player, 75);
-		Set Ability Cooldown(Event Player, Button(Ability 1), 0);
-		Set Invisible(Event Player, All);
-		Press Button(Event Player, Button(Ability 1));
-		Wait(0.250, Ignore Condition);
-		Set Gravity(Event Player, 0);
-		Apply Impulse(Event Player, Up, 35, To Player, Cancel Contrary Motion);
-		Set Projectile Gravity(Event Player, 50000);
-	}
-}
-
-rule("Rule 164")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Torbjörn;
-	}
-
-	conditions
-	{
-		Has Spawned(Event Player) == True;
-	}
-
-	actions
-	{
-		Event Player.Torb_Passive_Destory_Bots = 0;
-		Disallow Button(Event Player, Button(Ability 1));
-		Start Assist(Players In Slot(0, Team 1), All Players(Team 2), Assisters and Targets);
-	}
-}
-
-rule("Rule 164")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Torbjörn;
-	}
-
-	conditions
-	{
-		Event Player.Torb_Passive_Destory_Bots == 1;
-	}
-
-	actions
-	{
-		Destroy All Dummy Bots;
-	}
-}
-
-rule("Rule 164")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Torbjörn;
-	}
-
-	conditions
-	{
-		Number Of Living Players(Team 2) == 0;
-		Is Game In Progress == True;
-	}
-
-	actions
-	{
-		Destroy All Dummy Bots;
-	}
-}
-
-rule("Rule 173")
+rule("Apex:")
 {
 	event
 	{
@@ -4627,7 +4559,7 @@ disabled rule("")
 	}
 }
 
-rule("Rule 195")
+rule("Orisa:")
 {
 	event
 	{
@@ -4651,7 +4583,7 @@ rule("Rule 195")
 	}
 }
 
-rule("Rule 195")
+rule("Orisa:")
 {
 	event
 	{
@@ -4882,26 +4814,192 @@ disabled rule("")
 	}
 }
 
-rule("Bastion: Overcharged - Fire Rate")
+rule("Zenyatta: Dark Bindings - Kick Force")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Meleeing(Event Player) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 15, To World, Cancel Contrary Motion);
+		Wait(0.016, Ignore Condition);
+		Apply Impulse(Victim, Up, 2, To Player, Incorporate Contrary Motion);
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Effects")
 {
 	event
 	{
 		Ongoing - Each Player;
 		Team 1;
-		Bastion;
+		Zenyatta;
 	}
 
 	conditions
 	{
-		Is Firing Primary(Event Player) == True;
+		Is Using Ultimate(Event Player) == True;
 	}
 
 	actions
 	{
-		Set Projectile Speed(Event Player, 9999);
-		Wait(0.026, Abort When False);
-		Set Projectile Speed(Event Player, 10000);
-		Wait(0.026, Abort When False);
+		Create Effect(All Players(Team 2), Good Aura, Color(Black), Event Player, 12, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Bad Aura, Color(Black), Event Player, 10, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Bad Aura, Color(Black), Event Player, 8, Visible To Position and Radius);
+		Create Effect(All Players(Team 2), Bad Aura, Color(Black), Event Player, 6, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Good Aura, Color(Gray), Event Player, 4, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Good Aura, Color(Gray), Event Player, 3, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Good Aura, Color(Gray), Event Player, 4, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Bad Aura Sound, Color(Gray), Event Player, 4, Visible To Position and Radius);
+		Wait(6, Ignore Condition);
+		Destroy All Effects;
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Gravity Loop")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Move Speed(Event Player, 0);
+		Set Gravity(Event Player, 0);
+		Set Status(Event Player, Null, Rooted, 6);
+		Wait Until(Is Using Ultimate(Event Player) == False, 6);
+		Set Move Speed(Event Player, 115);
+		Set Gravity(Event Player, 100);
+	}
+}
+
+rule("Zenyatta: Black hole's impulse - Sun")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Set Gravity(All Living Players(Team 2), 0.500);
+		Wait(0.036, Ignore Condition);
+		Apply Impulse(All Living Players(Team 2), Up, 0.100, To Player, Incorporate Contrary Motion);
+		Apply Impulse(All Living Players(Team 2), Direction Towards(Event Player, Player Closest To Reticle(Event Player, Team 2)), -1.500,
+			To World, Incorporate Contrary Motion);
+		Loop If Condition Is True;
+		Set Gravity(All Living Players(Team 2), 100);
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Gravity 12")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Event Player, 12, Team 2, Off), Event Player, 10);
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Gravity 8")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Event Player, 8, Team 2, Surfaces), Event Player, 20);
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Gravity 4")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Event Player, 4, Team 2, Surfaces), Event Player, 40);
+		Wait(0.250, Ignore Condition);
+		Loop If Condition Is True;
+	}
+}
+
+rule("Zenyatta: Burning Blaze - Gravity 1")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Zenyatta;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		Damage(Players Within Radius(Event Player, 2, Team 2, Surfaces), Event Player, 250);
+		Wait(0.250, Ignore Condition);
 		Loop If Condition Is True;
 	}
 }
@@ -4972,7 +5070,7 @@ rule("Soldier 76: Blood Rush - Ult Heal")
 
 	actions
 	{
-		Heal(Event Player, Event Player, 5);
+		Heal(Event Player, Event Player, Event Damage);
 	}
 }
 
@@ -5106,89 +5204,11 @@ rule("Soldier 76: Primary Fire - Lifesteal")
 
 	actions
 	{
-		Heal(Event Player, Null, 1);
+		Heal(Event Player, Event Player, 1);
 	}
 }
 
-disabled rule("Rule 164")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Soldier: 76;
-	}
-
-	conditions
-	{
-		Is Button Held(Event Player, Button(Ability 2)) == True;
-		Is Dummy Bot(Event Player) == False;
-	}
-
-	actions
-	{
-		Destroy All Dummy Bots;
-		Set Ability Cooldown(Event Player, Button(Ability 2), 15);
-		Wait(0.050, Ignore Condition);
-		Create Dummy Bot(Hero(Baptiste), Team 1, -1, Event Player, Down);
-		Wait(15, Ignore Condition);
-	}
-}
-
-disabled rule("Soldier 76: Blood Rush - Ult Heal")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Baptiste;
-	}
-
-	conditions
-	{
-		Is Dummy Bot(Event Player) == True;
-	}
-
-	actions
-	{
-		Disable Movement Collision With Players(Event Player);
-		Start Forcing Dummy Bot Name(Event Player, Custom String("."));
-		Set Projectile Gravity(Event Player, 500);
-		Set Status(Event Player, Null, Phased Out, 9999);
-		Set Invisible(Event Player, All);
-		Attach Players(Event Player, Closest Player To(Event Player, Team 1), Vector(0, 1, 0));
-		Wait(0.250, Ignore Condition);
-		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
-		Press Button(Event Player, Button(Ability 2));
-		Set Gravity(Event Player, 0);
-		Detach Players(Event Player);
-		Wait(0.016, Ignore Condition);
-		Apply Impulse(Event Player, Up, 35, To Player, Cancel Contrary Motion);
-	}
-}
-
-disabled rule("Apex: Bots - Destory Bots if Team 2 is Dead")
-{
-	event
-	{
-		Ongoing - Each Player;
-		Team 1;
-		Soldier: 76;
-	}
-
-	conditions
-	{
-		Number Of Living Players(Team 2) == 0;
-		Is Game In Progress == True;
-	}
-
-	actions
-	{
-		Destroy All Dummy Bots;
-	}
-}
-
-rule("Rule 225")
+rule("Soldier 76:")
 {
 	event
 	{
@@ -5216,7 +5236,7 @@ rule("Rule 225")
 	}
 }
 
-rule("Rule 225")
+rule("Soldier 76:")
 {
 	event
 	{
@@ -5244,7 +5264,7 @@ rule("Rule 225")
 	}
 }
 
-rule("Rule 227")
+rule("Soldier 76:")
 {
 	event
 	{
@@ -5267,28 +5287,129 @@ rule("Rule 227")
 	}
 }
 
-rule("Dva:")
+disabled rule("")
 {
 	event
 	{
-		Player Dealt Knockback;
+		Ongoing - Global;
+	}
+}
+
+rule("Rule 232")
+{
+	event
+	{
+		Ongoing - Each Player;
 		Team 1;
-		D.Va;
+		Lúcio;
 	}
 
 	conditions
 	{
-		Event Ability == Button(Ability 1);
+		Is On Wall(Event Player) == True;
 	}
 
 	actions
 	{
-		Set Status(Victim, Null, Stunned, 1);
-		Set Gravity(Victim, 0);
-		Apply Impulse(Victim, Direction Towards(Attacker, Victim), 7.500, To World, Incorporate Contrary Motion);
-		Wait(0.016, Ignore Condition);
-		Apply Impulse(Victim, Up, 5, To Player, Incorporate Contrary Motion);
-		Set Gravity(Victim, 100);
+		Set Jump Vertical Speed(Event Player, 135);
+		Set Move Speed(Event Player, 135);
+	}
+}
+
+rule("Rule 237")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Lúcio;
+	}
+
+	conditions
+	{
+		Is On Wall(Event Player) == False;
+	}
+
+	actions
+	{
+		Wait(0.250, Abort When False);
+		Set Jump Vertical Speed(Event Player, 100);
+		Set Move Speed(Event Player, 115);
+	}
+}
+
+rule("Rule 234")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Lúcio;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Start Heal Over Time(Event Player, Event Player, 9999, 12.300);
+	}
+}
+
+rule("Rule 235")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Lúcio;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ultimate)) == True;
+		Ultimate Charge Percent(Event Player) == 0;
+	}
+
+	actions
+	{
+		Global.Lucio_Ult_Time_Started = Total Time Elapsed;
+		Disable Movement Collision With Players(Event Player);
+		Apply Impulse(Event Player, Up, 5, To World, Incorporate Contrary Motion);
+		Create Effect(All Players(All Teams), Light Shaft, Color(Lime Green), Event Player, 2 * (
+			Total Time Elapsed - Global.Lucio_Ult_Time_Started), Position and Radius);
+		Global.Lucio_Ult_Effects = Last Created Entity;
+		" "
+		Wait Until(Is On Ground(Event Player), 99999);
+		Enable Movement Collision With Players(Event Player);
+		" "
+		disabled Kill(Players Within Radius(Event Player, 2, Team 2, Off), Event Player);
+		Damage(Players Within Radius(Event Player, 3, Team 2, Off), Event Player, 400 * Min(10, Max(1,
+			Total Time Elapsed - Global.Lucio_Ult_Time_Started)));
+		Destroy Effect(Global.Lucio_Ult_Effects);
+	}
+}
+
+rule("Rule 238")
+{
+	event
+	{
+		Player Dealt Final Blow;
+		Team 1;
+		Lúcio;
+	}
+
+	conditions
+	{
+		Ultimate Charge Percent(Event Player) == 0;
+	}
+
+	actions
+	{
+		Set Ultimate Charge(Event Player, 100);
+		Cancel Primary Action(Event Player);
 	}
 }
 
@@ -5297,5 +5418,1072 @@ disabled rule("")
 	event
 	{
 		Ongoing - Global;
+	}
+}
+
+rule("Tracer: Second Wind - Recall")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Is Using Ability 2(Event Player) == True;
+	}
+
+	actions
+	{
+		Heal(Event Player, Null, 50);
+	}
+}
+
+rule("Tracer: Second Wind - On Hit")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Tracer;
+	}
+
+	actions
+	{
+		Heal(Event Player, Null, 2);
+	}
+}
+
+rule("Tracer: Double Jump - Spawn")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		Event Player.Tracer_Jump = 1;
+	}
+}
+
+rule("Tracer: Double Jump - Allow double jump")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Altitude Of(Event Player) > 0.400;
+		Is Button Held(Event Player, Button(Jump)) == False;
+		Event Player.Tracer_Jump > 0;
+	}
+
+	actions
+	{
+		Event Player.Tracer_Double = True;
+	}
+}
+
+rule("Tracer: Double Jump - Disallow double jump")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Event Player.Tracer_Jump <= 0;
+	}
+
+	actions
+	{
+		Event Player.Tracer_Double = False;
+	}
+}
+
+rule("Tracer: Double Jump - Consume a charge")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Event Player.Tracer_Double == True;
+		Is Button Held(Event Player, Button(Jump)) == True;
+	}
+
+	actions
+	{
+		Apply Impulse(Event Player, Up, 9, To World, Cancel Contrary Motion);
+		Event Player.Tracer_Jump -= 1;
+	}
+}
+
+rule("Tracer: Double Jump - Reset your jump count")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Is In Air(Event Player) != True;
+	}
+
+	actions
+	{
+		Event Player.Tracer_Jump = 1;
+		Event Player.Tracer_Double = False;
+	}
+}
+
+rule("Tracer:")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Tracer;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Ability 2)) == True;
+	}
+
+	actions
+	{
+		Wait(1.251, Abort When False);
+		Set Status(Event Player, Null, Unkillable, 2.500);
+		Apply Impulse(Event Player, Vector(Random Integer(-100, 100), Random Integer(5, 100), Random Integer(-100, 100)), 25, To World,
+			Cancel Contrary Motion);
+		Wait(0.250, Ignore Condition);
+		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
+		Press Button(Event Player, Button(Ability 2));
+		Wait(1.251, Ignore Condition);
+		Apply Impulse(Event Player, Vector(Random Integer(-100, 100), Random Integer(5, 100), Random Integer(-100, 100)), 25, To World,
+			Cancel Contrary Motion);
+		Wait(0.250, Ignore Condition);
+		Set Ability Cooldown(Event Player, Button(Ability 2), 0);
+		Press Button(Event Player, Button(Ability 2));
+		Wait(9, Ignore Condition);
+	}
+}
+
+rule("Lucio:")
+{
+	event
+	{
+		Player Dealt Damage;
+		Team 1;
+		Lúcio;
+	}
+
+	conditions
+	{
+		Event Ability == Button(Secondary Fire);
+	}
+
+	actions
+	{
+		Set Status(Victim, Null, Stunned, 0.500);
+	}
+}
+
+rule("Genji: Smoke Bomb - Smoke Global and Effect")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		Genji;
+	}
+
+	conditions
+	{
+		Is Button Held(Event Player, Button(Melee)) == True;
+		Global.SmokeActive == False;
+		Event Player.Talent3 == True;
+	}
+
+	actions
+	{
+		Global.SmokeActive = True;
+		Global.SmokePOS = Position Of(Event Player);
+		Create Effect(All Players(Team 1), Ring, Color(Lime Green), Global.SmokePOS, 14, Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 9, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 8, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, 1, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -3, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -5, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -7, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -11, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -13, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -2, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -4, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Create Effect(All Players(All Teams), Cloud, Color(Gray), Global.SmokePOS + Vector(0, -6, 0), Random Integer(1, 15),
+			Visible To Position and Radius);
+		Set Invisible(Event Player, All);
+		Wait(7, Ignore Condition);
+		Destroy All Effects;
+		Global.SmokeActive = False;
+		Set Invisible(Event Player, None);
+		Wait(20, Ignore Condition);
+	}
+}
+
+rule("Apex: Team 2 - Ult Damage Bonus")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 2;
+		All;
+	}
+
+	conditions
+	{
+		Is Using Ultimate(Event Player) == True;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Pharah), Team 2) && Is Using Ultimate(Event Player));
+			Set Projectile Speed(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 2.500);
+			Set Projectile Speed(Event Player, 100);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(McCree), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6.200);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Reaper), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Set Move Speed(Event Player, 150);
+			Wait Until(Is Using Ultimate(Event Player) == False, 3);
+			Set Move Speed(Event Player, 105);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Soldier: 76), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Genji), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait Until(Is Using Ultimate(Event Player) == False, 6);
+			Set Damage Dealt(Event Player, 125);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Hanzo), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(7.500, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+		If(Hero Of(Event Player) == Is Hero Being Played(Hero(Doomfist), Team 2) && Is Using Ultimate(Event Player));
+			Set Damage Dealt(Event Player, 200);
+			Wait(5, Ignore Condition);
+			Set Damage Dealt(Event Player, 150);
+		End;
+	}
+}
+
+rule("Apex: Hud Text")
+{
+	event
+	{
+		Ongoing - Each Player;
+		Team 1;
+		All;
+	}
+
+	conditions
+	{
+		Hero Of(Event Player) != Event Player.Apex_General_Hero_HUD;
+		Has Spawned(Event Player) == True;
+	}
+
+	actions
+	{
+		For Player Variable(Event Player, Apex_General_HUD, Count Of(Event Player.Apex_Array_HUD), 0, -1);
+			Destroy HUD Text(Event Player.Apex_Array_HUD[Event Player.Apex_General_HUD - 1]);
+		End;
+		Event Player.Apex_Array_HUD = Empty Array;
+		Event Player.Apex_General_Hero_HUD = Hero Of(Event Player);
+		If(Hero Of(Event Player) == Hero(Ana));
+			Start Modifying Hero Voice Lines(Event Player, 0.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Ana)), Custom String("The Nightmare of Necropolis"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Paranoia [Ult]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Bastion));
+			Start Modifying Hero Voice Lines(Event Player, 1.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Bastion)), Custom String("The Machine Hearald of Paris"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Junkrat));
+			Start Modifying Hero Voice Lines(Event Player, 1.005, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Junkrat)), Custom String("The Mad Bomber of Junkertown"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("I'm alive [Passive]"), Custom String(
+				"When earning a kill with total mayhem, You rez at your location"), Left, 1, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Ripper Air [Ability 1"), Custom String("Travel further"), Left, 2, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Sticky Wicket [Ability 2]"), Custom String("Now Knocks down Hunters on Trap"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Extra Oomph [Ultimate]"), Custom String("Riptire's speed builds up over time"),
+				Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Widowmaker));
+			Start Modifying Hero Voice Lines(Event Player, 1.030, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Widowmaker)), Custom String("The Night Hunter of Château Guillard"),
+				Custom String("Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Secondary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ultimate]"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Roadhog));
+			Start Modifying Hero Voice Lines(Event Player, 0.550, True);
+			Start Scaling Player(Event Player, 1.200, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Roadhog)), Custom String("The Dreadnought of Havana"), Custom String(
+				"Difficulty 1/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Junk Rounds [Primary Fire]"), Custom String("Primary Fire now Stuns on Hit"),
+				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(""), Left, 2, Color(Blue), Color(Blue), Color(White),
+				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Fear Beyond Death [Ability 1]"), Custom String(
+				"Hooking now Pulls you to Walls and Reloads your gun"), Left, 3, Color(Aqua), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String("Hooking while Tapping |SHIFT| will Pull Target"), Left, 4,
+				Color(Blue), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(
+				"Hooking while Holding |SHIFT| will Swap Postions with your Target"), Left, 5, Color(Sky Blue), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(""), Left, 6, Color(Blue), Color(Blue), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Echoing Flames [Ability 2]"), Custom String(
+				"Now Heals you over Time for more Health"), Left, 7, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Purge [Ult]"), Custom String("Ult now Roots targets"), Left, 8, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Sigma));
+			Start Modifying Hero Voice Lines(Event Player, 0.900, True);
+			Start Scaling Player(Event Player, 1.150, True);
+			Start Scaling Barriers(Event Player, 1.200, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Sigma)), Custom String("The Void Prophet of Nepal"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Reinhardt));
+			Start Modifying Hero Voice Lines(Event Player, 0.680, True);
+			Start Scaling Player(Event Player, 1.200, True);
+			Start Scaling Barriers(Event Player, 0.800, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Reinhardt)), Custom String("The Frozen Revenant of Eichenwalde"),
+				Custom String("Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Frozen Hammer [Primary Fire]"), Custom String("Swings now Knockdown Hunters"),
+				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Arctic Assault [Ability 1]"), Custom String(
+				"Charge now starts Slow and Builds up over 2 Seconds"), Left, 2, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Flame Frost [Ability 2]"), Custom String(
+				"Flamestrike now Freezes players Hit and anyone around them."), Left, 3, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Fury of the North [Ult]"), Custom String(
+				"Ult in a 20 Meter Circle and Knock Hunters into the Air."), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Mercy));
+			Start Modifying Hero Voice Lines(Event Player, 1.030, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Mercy)), Custom String("The Ice Witch of Ayutthaya"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Melee]"), Custom String("Filler", Input Binding String(Button(Jump))), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ult]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Lúcio));
+			Start Modifying Hero Voice Lines(Event Player, 0.950, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Lúcio)), Custom String("The Exile of Rio de Janeiro"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Urban Surfing [Passive]"), Custom String("Wall Riding is 30% Faster"), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Boop [Secondary Fire]"), Custom String("Soundwave now Stuns Hunters hit"), Left,
+				2, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Crossfade [Ability 1]"), Custom String("Crossfade plays both songs at once"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Soundwave Guillotine [Ult]"), Custom String(
+				"Ult deals damage based on Air Time. Land on a Hunter to deal Damage. 2 Meters Radius"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Zarya));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.150, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Zarya)), Custom String("The Enforcer of Volskaya"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Primary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Tracer));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Tracer)), Custom String("The Bounty Hunter of King's Row"), Custom String(
+				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Primary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String(
+				"Recall can be Pushed once to do a basic Recall. Or can be Held to Recall 3 Times"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Passive]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Rainbow Storm [Interact]"), Custom String(
+				"Become a storm that deals damage to players in your way"), Left, 5, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(McCree));
+			Start Modifying Hero Voice Lines(Event Player, 0.990, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(McCree)), Custom String("The Outlaw of Route 66"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Collateral Damage [Secondary Fire"), Custom String(
+				"Stand still and rapidly fire your gun"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Quick Draw [Ability 1]"), Custom String("Roll now Phases you out"), Left, 3,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Smoke Screen [Ability 2]"), Custom String("Flash bang now Blinds players"),
+				Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("New Destiny [Ult]"), Custom String(
+				"Force Root everyone. After 4 seconds in Ult gain High Damage for the remainder"), Left, 5, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("End of the Line [Primary Fire]"), Custom String(
+				"Your last Shot deals incredible Damage"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Reaper));
+			Start Modifying Hero Voice Lines(Event Player, 0.550, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Reaper)), Custom String("The Sydney Harbor Ripper"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Phantom Dive [Ability 1]"), Custom String(
+				"Drop Physical From and Move through Walls and Fly"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Phantom Gift [Ability 2]"), Custom String("Teleport and Refill your Ammo"),
+				Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Death from Below [Ult]"), Custom String(
+				"Drop a Biotic Grenade at your feet and Death Blossom"), Left, 3, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(D.Va));
+			Start Modifying Hero Voice Lines(Event Player, 1.100, True);
+			Start Scaling Player(Event Player, 1.150, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(D.Va)), Custom String("The Mechanized Menace of Busan"), Custom String("3/5"),
+				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 1, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ultimate]"), Custom String("Filler"), Left, 4, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Orisa));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.200, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Orisa)), Custom String("The Iron Maiden of Numbani"), Custom String(
+				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 0.500, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Secondary Fire]"), Custom String("Charge", Input Binding String(Button(
+				Jump))), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Pharah));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Pharah)), Custom String("The Sheriff of Anubis"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Z-Drive Resonance [Secondary Fire]"), Custom String("Now only allows Hovering"),
+				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Vault Breaker [Ability 1]"), Custom String(
+				"Surge forward at your Crosshair. Landing after Vault Breaker will Knockdown Hunters in 5 Meters"), Left, 2, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 5, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Ace in the Hole [Ult]"), Custom String(
+				"Rockets travel Faster and deal bonus Damage"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Genji));
+			Start Modifying Hero Voice Lines(Event Player, 0.900, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Genji)), Custom String("The Unforgotten of Lijiang"), Custom String(
+				"Difficulty 5/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Fate Sealed"), Custom String(
+				"Genji wields an ancient weapon that battles with him for control.\r\nOnce your ult is filled, Genji will be given a choice \r\n\r\n \r\n"),
+				Left, 1, Color(White), Color(Purple), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			disabled Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(" \r\n "), Left, 5, Color(White), Color(Gray), Color(
+				White), Visible To and String, Default Visibility);
+			disabled Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("|| Shounobi Form ||"), Custom String(" "), Left, 2, Color(Aqua), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Way of the Hunter [Melee]"), Custom String("Press Melee to drop a smoke bomb"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Soul Unbound [Ability 1"), Custom String(
+				"Hold Melee and Jump to Dash through walls"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(" \r\n "), Left, 5, Color(White), Color(Gray), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("|| Demon Form ||"), Custom String(" "), Left, 6, Color(White), Color(Red),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Umbral Trespass [Ability 1"), Custom String("Dash leaves a DOT"), Left, 7,
+				Color(White), Color(Red), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Shadow Step [Ability 2]"), Custom String("Deflect makes you Phased out"), Left,
+				7, Color(White), Color(Red), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Brigitte));
+			Start Modifying Hero Voice Lines(Event Player, 1.020, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Brigitte)), Custom String("Filler"), Custom String("Difficulty 2/5"), Left, 0,
+				Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Interact]"), Custom String("Filler"), Left, 4, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Torbjörn));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Torbjörn)), Custom String("The Madman of Gothenburg"), Custom String(
+				"Difficulty 1/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Undying [Passive]"), Custom String(
+				"When you Die become Unkillable for 7 Seconds after which you Die. Deal Double Damage during this."), Left, 1, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		Call Subroutine(Apex_HUD);
+	}
+}
+
+rule("Apex: Hud Text 2")
+{
+	event
+	{
+		Subroutine;
+		Apex_HUD;
+	}
+
+	actions
+	{
+		If(Hero Of(Event Player) == Hero(Zenyatta));
+			Start Modifying Hero Voice Lines(Event Player, 0.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Zenyatta)), Custom String("The Void Walker of Petra"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Melee]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Secondary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability]"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ultimate]"), Custom String("Filler"), Left, 5, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Soldier: 76));
+			Start Modifying Hero Voice Lines(Event Player, 0.920, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Soldier: 76)), Custom String("The Crimson Reaper of Hollywood"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Transfusion [Primary Fire]"), Custom String(
+				"Soldier 76 syphons blood over 10 from the target enemy, Damages target and Heals himself"), Left, 1, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Large Casing [Secondary Fire]"), Custom String("Now fires 2 Charges"), Left, 2,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Sanguine Cloud [Ability 1"), Custom String("Turn Untargetable and move Faster"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Hemostasis [Ult]"), Custom String(
+				"Become a Perfect Scion and gain 100% Life Steal"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 5, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Sombra));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Sombra)), Custom String("The Rogue Assassin of Dorado"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Hijack [Passive]"), Custom String(
+				"When you Hack a Target, Steal 25% of their Ult Charge"), Left, 1, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Twilight Shroud [Ability 1]"), Custom String(
+				"Turn Invisible, move Faster and become Lighter"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Perfect Execution [Ult]"), Custom String("Now deals 75% of Hunters Health"),
+				Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Five Point Strike [Melee]"), Custom String(
+				"Melee hits from behind deal bonus Damage and Knockdown Targets"), Left, 2, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Moira));
+			Start Modifying Hero Voice Lines(Event Player, 1.020, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Moira)), Custom String("Filler [ Title ]"), Custom String("Difficulty 3/5"),
+				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(" [Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Abillity 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Winston));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.190, True);
+			Start Scaling Barriers(Event Player, 2, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Winston)), Custom String("The Monkey King of Gibraltar"), Custom String(
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Hop [Ability 1]"), Custom String(""), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Bubble Projector [Ability 2]"), Custom String(
+				"Barrier Projector size is 200% larger"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Mega Monkey [Ultimate]"), Custom String(
+				"Regen all Health and go into Stage 2. Last Forever"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Doomfist));
+			Start Modifying Hero Voice Lines(Event Player, 0.850, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Doomfist)), Custom String("The Unshackled of Rialto"), Custom String(
+				"Difficulty 5/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Haymaker [Secondary Fire]"), Custom String(
+				"Move at 100% Movespeed and travels further"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Facebreaker [Ability 1]"), Custom String("Uppercut now tavels Higher"), Left, 2,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Knuckle Down [Ability 2]"), Custom String(
+				"Deals bonus Damage based on Distince"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("The Show Stopper [Ult]"), Custom String(
+				"Only last for 3 Seconds. Killing a Hunter gives you 100% Ult"), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Mei));
+			Start Modifying Hero Voice Lines(Event Player, 1.040, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Mei)), Custom String("The Cryophoenix of Antarctica"), Custom String(
+				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
+		If(Hero Of(Event Player) == Hero(Hanzo));
+			Start Modifying Hero Voice Lines(Event Player, 0.820, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Hanzo)), Custom String("The Unforgiven of Hanamura"), Custom String(
+				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Piercing Arrow"), Custom String(
+				"Now Stuns on Hit. Headshots will Knockdown and Push Hunters"), Left, 2, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Hail of Arrows [Ability 2]"), Custom String("Deals Bleed Damage and Heals you"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Corruption [Passive]"), Custom String("Arrows now have 0% Gravity"), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Blighted Quiver [Ult]"), Custom String(
+				"Shoot 3 Dragon Arrows over 3 seconds. Does not Stack"), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Wait(20, Ignore Condition);
+			Destroy All HUD Text;
+		End;
 	}
 }

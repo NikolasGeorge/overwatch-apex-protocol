@@ -34,41 +34,41 @@ rule("Apex: Hud Text")
 		Event Player.Apex_Array_HUD = Empty Array;
 		Event Player.Apex_General_Hero_HUD = Hero Of(Event Player);
 		If(Hero Of(Event Player) == Hero(Ana));
+			Start Modifying Hero Voice Lines(Event Player, 0.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Ana)), Custom String("The Nightmare of Necropolis"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Shroud of Darkness [Ability 1]"), Custom String("Healing"), Left, 1, Color(
-				White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Unspeakable Horror [Ability 2"), Custom String("Shorter duration"), Left, 2,
-				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Paranoia [Ult]"), Custom String("Place a bomb"), Left, 3, Color(White), Color(
-				Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Paranoia [Ult]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Bastion));
+			Start Modifying Hero Voice Lines(Event Player, 1.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Bastion)), Custom String("The Machine Hearald of Paris"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Configuration: Tank [Primary Fire]"), Custom String(
-				"Configuration tank is automatically used at the start with reduced damage"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Scope [Ability 1]"), Custom String(
-				"Hold to increase accuracy but at the cost of movement speed"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Barrier [Ability 2]"), Custom String(
-				"Gain a barrier for a few seconds. 0 damage taken with barrier equipped"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Cannon Upgrade [Interact]"), Custom String(
-				"Your cannon becomes a bit stronger for a few seconds"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -76,6 +76,8 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Junkrat));
+			Start Modifying Hero Voice Lines(Event Player, 1.005, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Junkrat)), Custom String("The Mad Bomber of Junkertown"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -83,69 +85,65 @@ rule("Apex: Hud Text")
 				"When earning a kill with total mayhem, You rez at your location"), Left, 1, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Ripper Air [Ability 1"), Custom String("Travel further"), Left, 2, Color(
-				White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Ripper Air [Ability 1"), Custom String("Travel further"), Left, 2, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Sticky Wicket [Ability 2]"), Custom String(
-				"Now Knocks down Hunters on Trap"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Sticky Wicket [Ability 2]"), Custom String("Now Knocks down Hunters on Trap"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Extra Oomph [Ultimate]"), Custom String(
-				"Riptire's speed builds up over time"), Left, 4, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Extra Oomph [Ultimate]"), Custom String("Riptire's speed builds up over time"),
+				Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Widowmaker));
+			Start Modifying Hero Voice Lines(Event Player, 1.030, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Widowmaker)), Custom String("The Night Hunter of Château Guillard"),
 				Custom String("Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Medic Orb [Secondary Fire]"), Custom String(
-				"Shoot an orb that heals teammates it hits"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Secondary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Grappling hook"), Custom String(
-				"When used, enemies automatically take damage if in the radius"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Medic Area [Interact]"), Custom String("Hold to heal players in the radius"),
-				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Laser Eyes [Ultimate]"), Custom String(
-				"In addition to infra sight, enemies you look at will slowly take damage"), Left, 4, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ultimate]"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Roadhog));
+			Start Modifying Hero Voice Lines(Event Player, 0.550, True);
+			Start Scaling Player(Event Player, 1.200, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Roadhog)), Custom String("The Dreadnought of Havana"), Custom String(
 				"Difficulty 1/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Junk Rounds [Primary Fire]"), Custom String("Primary Fire now Stuns on Hit"),
 				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-						Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(
-				""), Left, 2, Color(Blue), Color(Blue), Color(White), Visible To and String,
-				Default Visibility);
-			Create HUD Text(Event Player, Null, Custom String("Fear Beyond Death [Ability 1]"), Custom String(
-				"Hooking now Pulls you to Walls and Reloads your gun"), Left, 3, Color(Aqua), Color(Aqua), Color(White),
+			Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(""), Left, 2, Color(Blue), Color(Blue), Color(White),
 				Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String(""), Custom String(
-				"Hooking while Tapping |SHIFT| will Pull Target"), Left, 4, Color(Blue), Color(Aqua), Color(White), Visible To and String,
+			Create HUD Text(Event Player, Null, Custom String("Fear Beyond Death [Ability 1]"), Custom String(
+				"Hooking now Pulls you to Walls and Reloads your gun"), Left, 3, Color(Aqua), Color(Aqua), Color(White), Visible To and String,
 				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String("Hooking while Tapping |SHIFT| will Pull Target"), Left, 4,
+				Color(Blue), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String(""), Custom String(
 				"Hooking while Holding |SHIFT| will Swap Postions with your Target"), Left, 5, Color(Sky Blue), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
-							Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(
-				""), Left, 6, Color(Blue), Color(Blue), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String(" \r\n "), Custom String(""), Left, 6, Color(Blue), Color(Blue), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Echoing Flames [Ability 2]"), Custom String(
 				"Now Heals you over Time for more Health"), Left, 7, Color(White), Color(Aqua), Color(White), Visible To and String,
@@ -159,136 +157,134 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Sigma));
+			Start Modifying Hero Voice Lines(Event Player, 0.900, True);
+			Start Scaling Player(Event Player, 1.150, True);
+			Start Scaling Barriers(Event Player, 1.200, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Sigma)), Custom String("The Void Prophet of Nepal"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Something's not quite right [Primary Fire]"), Custom String(
-				"Hyperspheres have a slight curve when moving"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Kinetic Grasp"), Custom String(
-				"Deals damage to players around you when finished being used"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Locked Rock [Ability 2]"), Custom String(
-				"Rocks have 0 cooldown, 0 gravity, and 0 speed"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Float [Interact]"), Custom String("Fly in the air for a short duration"), Left,
-				4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Reinhardt));
-						Create HUD Text(Event Player, Hero Icon String(Hero(Reinhardt)), Custom String("The Frozen Revenant of Eichenwalde"), Custom String(
-				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Start Modifying Hero Voice Lines(Event Player, 0.680, True);
+			Start Scaling Player(Event Player, 1.200, True);
+			Start Scaling Barriers(Event Player, 0.800, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Reinhardt)), Custom String("The Frozen Revenant of Eichenwalde"),
+				Custom String("Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Frozen Hammer [Primary Fire]"), Custom String(
-				"Swings now Knockdown Hunters"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Frozen Hammer [Primary Fire]"), Custom String("Swings now Knockdown Hunters"),
+				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Create HUD Text(Event Player, Null, Custom String("Arctic Assault [Ability 1]"), Custom String(
-				"Charge now starts Slow and Builds up over 2 Seconds"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+				"Charge now starts Slow and Builds up over 2 Seconds"), Left, 2, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Flame Frost [Ability 2]"), Custom String(
 				"Flamestrike now Freezes players Hit and anyone around them."), Left, 3, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Fury of the North [Ult]"), Custom String(
-				"Ult in a 20 Meter Circle and Knock Hunters into the Air. Flamestrike deals Double Damage to Hunters in the Air during this."), Left, 4, Color(White), Color(Aqua), Color(
-				White), Visible To and String, Default Visibility);
+				"Ult in a 20 Meter Circle and Knock Hunters into the Air."), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Mercy));
+			Start Modifying Hero Voice Lines(Event Player, 1.030, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Mercy)), Custom String("The Ice Witch of Ayutthaya"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Winged Chaos [Passive]"), Custom String("Hold [{0}] to fly at top speed",
-				Input Binding String(Button(Jump))), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Melee]"), Custom String("Filler", Input Binding String(Button(Jump))), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Projectile [Ability 1]"), Custom String(
-				"Just a projectile that deals damage :P"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Boomerange [Ability 2]"), Custom String(
-				"Shoot a medium ranged projectile that's not as strong but returns to you"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Launch Bomb [Interact]"), Custom String(
-				"Launch far ahead, then explode enemies around you"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ult]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Lúcio));
+			Start Modifying Hero Voice Lines(Event Player, 0.950, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Lúcio)), Custom String("The Exile of Rio de Janeiro"), Custom String(
-				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Constant Stream [Primary Fire]"), Custom String(
-				"Bullets shoot all at once rather than four at a time"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Urban Surfing [Passive]"), Custom String("Wall Riding is 30% Faster"), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Stunwave [Secondary Fire]"), Custom String(
-				"Booping players stuns them rather than launching them"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Boop [Secondary Fire]"), Custom String("Soundwave now Stuns Hunters hit"), Left,
+				2, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Self Improvement [Ability 2]"), Custom String(
-				"Become very fast and heal quickly for a short duration"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Crossfade [Ability 1]"), Custom String("Crossfade plays both songs at once"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Self Giving [Interact]"), Custom String(
-				"Take damage slowly While healing nearby allies"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Soundwave Guillotine [Ult]"), Custom String(
+				"Ult deals damage based on Air Time. Land on a Hunter to deal Damage. 2 Meters Radius"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Zarya));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.150, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Zarya)), Custom String("The Enforcer of Volskaya"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Knuckle Sandwich [Melee]"), Custom String(
-				"Deals Waaaaay more damage than your typical punch..."), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Energy Grenade [Primary Fire]"), Custom String(
-				"Forced To Shoot Primary Grenades, but take up only one ammo"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Primary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Shield Area [Ability 1]"), Custom String(
-				"Create a big barrier that makes anyone inside it invincible"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Tracer));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Tracer)), Custom String("The Bounty Hunter of King's Row"), Custom String(
 				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Pulse Bomb [Primary Fire]"), Custom String(
-				"Pulse bombs are shot machine gun style, but at reduced damage"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Primary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Blink"), Custom String("Damages players nearby once used"), Left, 3, Color(
-				White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Light Pulse [Ability 2]"), Custom String(
-				"Recall doesn't move you, but deal damage to players around the spot you were at"), Left, 4, Color(White), Color(Aqua), Color(
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String(
+				"Recall can be Pushed once to do a basic Recall. Or can be Held to Recall 3 Times"), Left, 4, Color(White), Color(Aqua), Color(
 				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Trash items [Passive]"), Custom String(
-				"Deal 2x as much damage to non-player objects [Turrets, barriers, ect]"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Passive]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Rainbow Storm [Interact]"), Custom String(
 				"Become a storm that deals damage to players in your way"), Left, 5, Color(White), Color(Aqua), Color(White),
@@ -299,6 +295,8 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(McCree));
+			Start Modifying Hero Voice Lines(Event Player, 0.990, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(McCree)), Custom String("The Outlaw of Route 66"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -326,6 +324,8 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Reaper));
+			Start Modifying Hero Voice Lines(Event Player, 0.550, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Reaper)), Custom String("The Sydney Harbor Ripper"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -334,10 +334,9 @@ rule("Apex: Hud Text")
 				"Drop Physical From and Move through Walls and Fly"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
 				Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Phantom Gift [Ability 2]"), Custom String(
-				"Teleport and Refill your Ammo"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
-							Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Phantom Gift [Ability 2]"), Custom String("Teleport and Refill your Ammo"),
+				Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Death from Below [Ult]"), Custom String(
 				"Drop a Biotic Grenade at your feet and Death Blossom"), Left, 3, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
@@ -347,78 +346,77 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(D.Va));
+			Start Modifying Hero Voice Lines(Event Player, 1.100, True);
+			Start Scaling Player(Event Player, 1.150, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(D.Va)), Custom String("The Mechanized Menace of Busan"), Custom String("3/5"),
 				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Attract [Ability 1]"), Custom String(
-				"Pull enemies in a radius of you closer to you"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 1, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Bomb Ejector [Ability 2]"), Custom String(
-				"Launch a bomb that explodes enemies and knocks you back"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Packed Punches [Interact]"), Custom String(
-				"Rapidly Punch a series of times at high damage dealt"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Mech Call [Ultimate]"), Custom String(" Destroy Mech Once Time Is Up"), Left, 4,
-				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ultimate]"), Custom String("Filler"), Left, 4, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Orisa));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.200, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Orisa)), Custom String("The Iron Maiden of Numbani"), Custom String(
 				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Fusion Driver"), Custom String(
-				"Infinite ammuntion, but will reload from time to time"), Left, 0.500, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 0.500, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Gravity Orb [Secondary Fire]"), Custom String(
-				"Shoot a projectile that sucks players in the orb as it's moving", Input Binding String(Button(Jump))), Left, 1, Color(White),
-				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Secondary Fire]"), Custom String("Charge", Input Binding String(Button(
+				Jump))), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Golden Orisa [Ability 1]"), Custom String(
-				"Become golden; while golden you are a bit stronger and slowly heal"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Pharah));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Pharah)), Custom String("The Sheriff of Anubis"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Z-Drive Resonance [Secondary Fire]"), Custom String(
-				"Now allows Hover"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Z-Drive Resonance [Secondary Fire]"), Custom String("Now only allows Hovering"),
+				Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Vault Breaker [Ability 1]"), Custom String(
-				"Surge forward at your Crosshair. Landing after Vault Breaker will Knockdown Hunters in 5 Meters"), Left, 2, Color(White), Color(Aqua), Color(White),
+				"Surge forward at your Crosshair. Landing after Vault Breaker will Knockdown Hunters in 5 Meters"), Left, 2, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 5, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String(""), Custom String(
-				""), Left, 5, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String(""), Custom String(
-				""), Left, 4, Color(White), Color(Aqua), Color(White),
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 4, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Ace in the Hole [Ult]"), Custom String(
-				"Rockets travel Faster and deal bonus Damage"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+				"Rockets travel Faster and deal bonus Damage"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Genji));
+			Start Modifying Hero Voice Lines(Event Player, 0.900, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Genji)), Custom String("The Unforgotten of Lijiang"), Custom String(
 				"Difficulty 5/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -458,46 +456,44 @@ rule("Apex: Hud Text")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Brigitte));
-			Create HUD Text(Event Player, Hero Icon String(Hero(Brigitte)), Custom String("Bashing Tank"), Custom String("Difficulty 2/5"),
-				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Start Modifying Hero Voice Lines(Event Player, 1.020, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Brigitte)), Custom String("Filler"), Custom String("Difficulty 2/5"), Left, 0,
+				Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Shield Baaaaaaaaash [Secondary Fire + Primary Fire]"), Custom String(
-				"Shield bash has improved rate of traveling"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Explosive Mace [Ability 1]"), Custom String(
-				"If whip shot hit a surface, it explodes, dealing an extra 30 damage to enemies nearby"), Left, 2, Color(White), Color(Aqua),
-				Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Phantom Bomb [Ability 2]"), Custom String(
-				"Explode a bomb that deals damage to enemies around it, and launch foward"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Mace Flash [Interact]"), Custom String("Flail your mace very quickly"), Left, 4,
-				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Interact]"), Custom String("Filler"), Left, 4, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Torbjörn));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Torbjörn)), Custom String("The Madman of Gothenburg"), Custom String(
 				"Difficulty 1/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Fire hazard [Passive]"), Custom String(
-				"When dead, your character will spark, dealing damage to enemies"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Undying [Passive]"), Custom String(
+				"When you Die become Unkillable for 7 Seconds after which you Die. Deal Double Damage during this."), Left, 1, Color(White),
+				Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Forge Hammer"), Custom String(
-				"Torbjorn's now a melee character. Hammering teammates will heal them"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Health Pod [Ability 1]"), Custom String(
-				"Heal teammates around you for a short period of time"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Rivet Gun [Interact]"), Custom String(
-				"Get access to your rivet gun for 7 seconds, then swap back to your forge hammer"), Left, 4, Color(White), Color(Aqua), Color(
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
 				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -519,72 +515,73 @@ rule("Apex: Hud Text 2")
 	actions
 	{
 		If(Hero Of(Event Player) == Hero(Zenyatta));
+			Start Modifying Hero Voice Lines(Event Player, 0.500, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Zenyatta)), Custom String("The Void Walker of Petra"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Sparta [Melee]"), Custom String(
-				"A quick melee deals a little more knockback and damage than regular"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Melee]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Scope [Secondary Fire]"), Custom String(
-				"Hold to activate a scope for more accurate shots"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Secondary Fire]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Tracker [Ability 1]"), Custom String(
-				"Locate the nearest enemy. This doesn't reveal its position, but shows the distance to it"), Left, 3, Color(White), Color(
-				Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Sticky Orb [Interact]"), Custom String(
-				"Shoot a projectile that locks enemies in place for a short period"), Left, 4, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler [Ability]"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Reverse Psycology [Ultimate]"), Custom String(
-				"Transcendance deals damage to enemies instead of healing teammates"), Left, 5, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ultimate]"), Custom String("Filler"), Left, 5, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Soldier: 76));
+			Start Modifying Hero Voice Lines(Event Player, 0.920, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Soldier: 76)), Custom String("The Crimson Reaper of Hollywood"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Transfusion [Primary Fire]"), Custom String(
-				"Soldier 76 syphons blood over 10 from the target enemy, Damages target and Heals himself"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+				"Soldier 76 syphons blood over 10 from the target enemy, Damages target and Heals himself"), Left, 1, Color(White), Color(
+				Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Large Casing [Secondary Fire]"), Custom String(
-				"Now fires 2 Charges"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Large Casing [Secondary Fire]"), Custom String("Now fires 2 Charges"), Left, 2,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Sanguine Cloud [Ability 1"), Custom String("Turn Untargetable and move Faster"), Left, 3, Color(
-				White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Sanguine Cloud [Ability 1"), Custom String("Turn Untargetable and move Faster"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Hemostasis [Ult]"), Custom String(
 				"Become a Perfect Scion and gain 100% Life Steal"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
 				Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""),
-				Left, 5, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 5, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Sombra));
+			Start Modifying Hero Voice Lines(Event Player, 1.010, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Sombra)), Custom String("The Rogue Assassin of Dorado"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Hijack [Passive]"), Custom String("When you Hack a Target, Steal 25% of their Ult Charge"), Left,
-				1, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Hijack [Passive]"), Custom String(
+				"When you Hack a Target, Steal 25% of their Ult Charge"), Left, 1, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Twilight Shroud [Ability 1]"), Custom String("Turn Invisible, move Faster and become Lighter"),
-				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Perfect Execution [Ult]"), Custom String(
-				"Now deals Damage and Fears Hunters for 1 second"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
+			Create HUD Text(Event Player, Null, Custom String("Twilight Shroud [Ability 1]"), Custom String(
+				"Turn Invisible, move Faster and become Lighter"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
 				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Perfect Execution [Ult]"), Custom String("Now deals 75% of Hunters Health"),
+				Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Five Point Strike [Melee]"), Custom String(
@@ -595,68 +592,69 @@ rule("Apex: Hud Text 2")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Moira));
-			Create HUD Text(Event Player, Hero Icon String(Hero(Moira)), Custom String("Rebuilding/Destroying Healer"), Custom String(
-				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
+			Start Modifying Hero Voice Lines(Event Player, 1.020, True);
+			Start Scaling Player(Event Player, 1.100, True);
+			Create HUD Text(Event Player, Hero Icon String(Hero(Moira)), Custom String("Filler [ Title ]"), Custom String("Difficulty 3/5"),
+				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("One Hand Gives [Primary Fire]"), Custom String(
-				"Healing source will push enemies away from you"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String(" [Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Double Fade [Abillity 1]"), Custom String(
-				"Fade lasts 2x longer than a regular fade"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Abillity 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Biotic Orb"), Custom String("Coodown time reduced but life time reduced"), Left,
-				3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Heaven Area [Interact]"), Custom String(
-				"Revive all dead teammates and heal them to full health instantly"), Left, 4, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Winston));
+			Start Modifying Hero Voice Lines(Event Player, 0.700, True);
+			Start Scaling Player(Event Player, 1.190, True);
+			Start Scaling Barriers(Event Player, 2, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Winston)), Custom String("The Monkey King of Gibraltar"), Custom String(
 				"Difficulty 3/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Dive [Ability 1]"), Custom String(
-				"Cooldown time reduced but knockback and acceleration reduced"), Left, 1, Color(White), Color(Aqua), Color(White),
+			Create HUD Text(Event Player, Null, Custom String("Hop [Ability 1]"), Custom String(""), Left, 1, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Bubble Projector [Ability 2]"), Custom String(
+				"Barrier Projector size is 200% larger"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String(""), Custom String(""), Left, 4, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Throwable shield [Ability 2]"), Custom String(
-				"Throw a shield that gives teammates invincibility while inside it"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Defuse bomb [Interacr]"), Custom String(
-				"Place a bomb that explodes shortly after placing, with high damage"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Primal Rage [Ultimate]"), Custom String(
-				"Less duration but knockback increase majorly"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
+			Create HUD Text(Event Player, Null, Custom String("Mega Monkey [Ultimate]"), Custom String(
+				"Regen all Health and go into Stage 2. Last Forever"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
 				Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Doomfist));
+			Start Modifying Hero Voice Lines(Event Player, 0.850, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Doomfist)), Custom String("The Unshackled of Rialto"), Custom String(
 				"Difficulty 5/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Haymaker [Secondary Fire]"), Custom String(
-				"Move at 100% Movespeed and travels further"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+				"Move at 100% Movespeed and travels further"), Left, 1, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Facebreaker [Ability 1]"), Custom String(
-				"Uppercut now tavels Higher"), Left, 2, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("Facebreaker [Ability 1]"), Custom String("Uppercut now tavels Higher"), Left, 2,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Knuckle Down [Ability 2]"), Custom String(
-				"Deals bonus Damage based on Distince"), Left, 3, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
-							Create HUD Text(Event Player, Null, Custom String("The Show Stopper [Ult]"), Custom String(
+				"Deals bonus Damage based on Distince"), Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String,
+				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("The Show Stopper [Ult]"), Custom String(
 				"Only last for 3 Seconds. Killing a Hunter gives you 100% Ult"), Left, 4, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
@@ -665,47 +663,46 @@ rule("Apex: Hud Text 2")
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Mei));
+			Start Modifying Hero Voice Lines(Event Player, 1.040, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Mei)), Custom String("The Cryophoenix of Antarctica"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Endothermic Blaster"), Custom String(
-				"No longer freezes players, but still slows players down"), Left, 1, Color(White), Color(Aqua), Color(White),
-				Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Cyro blast [Ability 1]"), Custom String(
-				"Cyro freeze will freeze enemies too close to you"), Left, 2, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Destroyed Ice wall [Ability 2]"), Custom String(
-				"Ice wall can be used more often, but instantly places down and destroys after use"), Left, 3, Color(White), Color(Aqua),
+			Create HUD Text(Event Player, Null, Custom String("[Primary Fire]"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua),
 				Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Super Freeze [Interact]"), Custom String(
-				"Freeze enemies close to you for 2 seconds"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 1]"), Custom String("Filler"), Left, 2, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("[Ability 2]"), Custom String("Filler"), Left, 3, Color(White), Color(Aqua),
+				Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 4, Color(White), Color(Aqua), Color(
+				White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);
 			Destroy All HUD Text;
 		End;
 		If(Hero Of(Event Player) == Hero(Hanzo));
+			Start Modifying Hero Voice Lines(Event Player, 0.820, True);
+			Start Scaling Player(Event Player, 1.100, True);
 			Create HUD Text(Event Player, Hero Icon String(Hero(Hanzo)), Custom String("The Unforgiven of Hanamura"), Custom String(
 				"Difficulty 4/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Piercing Arrow"), Custom String("Now Stuns on Hit. Headshots will Knockdown and Push Hunters"), Left, 2,
-				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Hail of Arrows [Ability 2]"), Custom String(
-				"Deals Bleed Damage and Heals you"), Left, 3, Color(White), Color(Aqua),
-				Color(White), Visible To and String, Default Visibility);
-			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
-			Create HUD Text(Event Player, Null, Custom String("Corruption [Passive]"), Custom String(
-				"Arrows now have 0% Gravity"), Left, 1, Color(White), Color(Aqua), Color(White),
+			Create HUD Text(Event Player, Null, Custom String("Piercing Arrow"), Custom String(
+				"Now Stuns on Hit. Headshots will Knockdown and Push Hunters"), Left, 2, Color(White), Color(Aqua), Color(White),
 				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Hail of Arrows [Ability 2]"), Custom String("Deals Bleed Damage and Heals you"),
+				Left, 3, Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
+			Create HUD Text(Event Player, Null, Custom String("Corruption [Passive]"), Custom String("Arrows now have 0% Gravity"), Left, 1,
+				Color(White), Color(Aqua), Color(White), Visible To and String, Default Visibility);
+			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Blighted Quiver [Ult]"), Custom String(
-				"Shoot 3 Dragon Arrows over 3 seconds. Does not Stack"), Left, 4, Color(White), Color(Aqua), Color(White), Visible To and String,
-				Default Visibility);
+				"Shoot 3 Dragon Arrows over 3 seconds. Does not Stack"), Left, 4, Color(White), Color(Aqua), Color(White),
+				Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Wait(20, Ignore Condition);

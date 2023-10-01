@@ -22,5 +22,5 @@ rule("Apex: Teammate Helath and Ult Hud")
 			: Custom String("{0}%", Ultimate Charge Percent(Event Player))), Left, 0, Health(Event Player) >= Max Health(Event Player)
 			/ 2 ? Color(Sky Blue) : Color(Red), Color(White), Health(Event Player) >= Max Health(Event Player) / 2 ? Color(White) : Color(
 			Red), Visible To String and Color, Default Visibility);
-	}
+	} // Will have to fix for OW2
 }

@@ -50,6 +50,6 @@ rule("Apex: Team 2 - Ult Damage Bonus")
 			Set Damage Dealt(Event Player, 200);
 			Wait(5, Ignore Condition);
 			Set Damage Dealt(Event Player, 150);
-		End;
+		End; // Still Works in 2023
 	}
 }

@@ -122,6 +122,6 @@ rule("Genji: Smoke Bomb - Smoke Global and Effect")
 		Destroy All Effects;
 		Global.SmokeActive = False;
 		Set Invisible(Event Player, None);
-		Wait(20, Ignore Condition);
+		Wait(20, Ignore Condition); // Effect still works in OW2
 	}
 }

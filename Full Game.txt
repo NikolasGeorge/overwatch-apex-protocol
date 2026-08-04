@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "Apex Protocol is an unofficial \"Juggernaut\" variation of Elimination, in which an entire team of Hunters is pitted against one player in a battle to the death. While the primary rules of kill or be killed still apply, the modification involves the lone player taking on an overpowered version of a Hero contending against the rest of the players as the other team until either the Apex or all of the Hunters die  .  .  .  .  .  .  .  .  .  .  .  .  .  .    .  .  .  .    .  .  .  .  .  .    Made by Crass#11567"
+		Description: "Apex Protocol is an unofficial \"Juggernaut\" variation of Elimination, in which an entire team of Hunters is pitted against one player in a battle to the death. While the primary rules of kill or be killed still apply, the modification involves the lone player taking on an overpowered version of a Hero contending against the rest of the players as the other team until either the Apex or all of the Hunters die  .  .  .  .  .  .  .  .  .  .  .  .  .  .    .  .  .  .    .  .  .  .  .  .    Made by Nikolas George"
 		Mode Name: "Apex Protocol"
 	}
 

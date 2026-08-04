@@ -4,8 +4,10 @@ An unofficial **Juggernaut** game mode for Overwatch, built entirely in the
 Workshop scripting environment. One overpowered player — the *Apex* — fights an
 entire team of six Hunters. Every hero was reworked from scratch for the role.
 
-**11,500+ views · 5,000+ downloads** on Workshop.codes
+**11,500+ views · 5,000+ downloads** on Workshop.codes (lifetime, 2019-2024)
 Developed April 2019 – January 2024.
+
+Live listing: <https://workshop.codes/apexprotocol>
 
 ---
 

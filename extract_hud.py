@@ -96,17 +96,17 @@ def parse(path):
 
 
 def stars(difficulty):
-    """Hollow marks the rating, filled marks the remainder.
+    """Filled marks only, no empty slots.
 
-    Counter-intuitive on paper, but Workshop.codes renders on a dark
-    background where a filled ● sits dark-on-dark and a hollow ○ reads as
-    the bright one — so filling the rating made a 1/5 look like a 4/5.
+    Empty slots were the whole problem: on a dark background the hollow glyph
+    read brighter than the filled one, so a 1/5 looked like a 4/5. Dropping
+    them removes the ambiguity — the count is the rating, and the "/5" in the
+    adjacent label supplies the scale.
     """
     m = re.search(r"(\d+)\s*/\s*(\d+)", difficulty or "")
     if not m:
         return ""
-    got, total = int(m.group(1)), int(m.group(2))
-    return "○" * got + "●" * (total - got)
+    return "●" * int(m.group(1))
 
 
 def to_markdown(heroes):

@@ -2,7 +2,7 @@ settings
 {
 	main
 	{
-		Description: "Apex Protocol is an unofficial \"Juggernaut\" variation of Elimination, in which an entire team of Hunters is pitted against one player in a battle to the death. While the primary rules of kill or be killed still apply, the modification involves the lone player taking on an overpowered version of a Hero contending against the rest of the players as the other team until either the Apex or all of the Hunters die  .  .  .  .  .  .  .  .  .  .  .  .  .  .    .  .  .  .    .  .  .  .  .  .    Made by Nikolas George"
+		Description: "Apex Protocol is an unofficial \"Juggernaut\" variation of Elimination, in which an entire team of Hunters is pitted against one player in a battle to the death. While the primary rules of kill or be killed still apply, the modification involves the lone player taking on an overpowered version of a Hero contending against the rest of the players as the other team until either the Apex or all of the Hunters die  .  .  .  .  .  .  .  .  .  .  .  .  .  .    .  .  .  .    .  .  .  .  .  .    Made by Crass#11567"
 		Mode Name: "Apex Protocol"
 	}
 
@@ -10117,7 +10117,7 @@ rule("Apex: Hud Text")
 		If(Hero Of(Event Player) == Hero(D.Va));
 			Start Modifying Hero Voice Lines(Event Player, 1.100, True);
 			Start Scaling Player(Event Player, 1.150, True);
-			Create HUD Text(Event Player, Hero Icon String(Hero(D.Va)), Custom String("The Mechanized Menace of Busan"), Custom String("3/5"),
+			Create HUD Text(Event Player, Hero Icon String(Hero(D.Va)), Custom String("The Mechanized Menace of Busan"), Custom String("Difficulty 3/5"),
 				Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Filler [Ability 1]"), Custom String("Filler"), Left, 1, Color(White), Color(
@@ -10213,7 +10213,7 @@ rule("Apex: Hud Text")
 		If(Hero Of(Event Player) == Hero(Brigitte));
 			Start Modifying Hero Voice Lines(Event Player, 1.020, True);
 			Start Scaling Player(Event Player, 1.100, True);
-			Create HUD Text(Event Player, Hero Icon String(Hero(Brigitte)), Custom String("Filler"), Custom String("Difficulty 2/5"), Left, 0,
+			Create HUD Text(Event Player, Hero Icon String(Hero(Brigitte)), Custom String("The Radiant Dawn of the Black Forest"), Custom String("Difficulty 2/5"), Left, 0,
 				Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Filler"), Custom String("Filler"), Left, 1, Color(White), Color(Aqua), Color(

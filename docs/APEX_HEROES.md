@@ -19,15 +19,10 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 | **Configuration: Drone [Ability 1]** | For 8 seconds. Gain flight and access to a gatling gun |
 | **Configuration: Tank [Ult]** | For 16 seconds. Bastion takes 40% less Damage, moves 30% Slower and Stuns on Hit |
 
-### [hero Brigitte] Brigitte — *Filler*
+### [hero Brigitte] Brigitte — *The Radiant Dawn of the Black Forest*
 **●●○○○**  Difficulty 2/5
 
-| Ability | What changed |
-|---|---|
-| **Filler** | Filler |
-| **Filler [Ability 1]** | Filler |
-| **Filler [Ability 2]** | Filler |
-| **Filler [Interact]** | Filler |
+_Rework in progress — abilities not finalised._
 
 ### [hero Cassidy] Cassidy — *The Outlaw of Route 66*
 **●●○○○**  Difficulty 2/5
@@ -41,13 +36,9 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 | **New Destiny [Ult]** | Force Root everyone. After 4 seconds in Ult gain High Damage for the remainder |
 
 ### [hero D.Va] D.Va — *The Mechanized Menace of Busan*
+**●●●○○**  Difficulty 3/5
 
-| Ability | What changed |
-|---|---|
-| **Filler [Ability 1]** | Filler |
-| **Filler [Ability 2]** | Filler |
-| **Filler** | Filler |
-| **Filler [Ultimate]** | Filler |
+_Rework in progress — abilities not finalised._
 
 ### [hero Doomfist] Doomfist — *The Unshackled of Rialto*
 **●●●●○**  Difficulty 4/5

@@ -75,15 +75,22 @@ def parse(path):
         title = header[0] if header else ""
         difficulty = ""
         for s in header[1:]:
-            if "difficulty" in s.lower():
-                difficulty = s
+            # Most heroes read "Difficulty 3/5"; D.Va's read a bare "3/5",
+            # which a keyword-only match silently dropped.
+            if "difficulty" in s.lower() or re.fullmatch(r"\d+\s*/\s*\d+", s):
+                difficulty = s if "difficulty" in s.lower() else "Difficulty " + s
         abilities = []
         for _, strings in rows[1:]:
             name = strings[0]
             desc = strings[1] if len(strings) > 1 else ""
             abilities.append((name, desc))
+        # Heroes whose HUD is still placeholder text shouldn't publish as
+        # rows of "Filler" -- mark them instead.
+        placeholder = all(n.lower().startswith("filler")
+                          for n, _ in abilities) if abilities else False
         heroes.append({"hero": hero, "title": title,
-                       "difficulty": difficulty, "abilities": abilities})
+                       "difficulty": difficulty, "abilities": abilities,
+                       "placeholder": placeholder})
     return heroes
 
 
@@ -106,6 +113,10 @@ def to_markdown(heroes):
         if d:
             L.append(f"**{d}**  {h['difficulty']}")
         L.append("")
+        if h.get("placeholder"):
+            L.append("_Rework in progress — abilities not finalised._")
+            L.append("")
+            continue
         if h["abilities"]:
             L.append("| Ability | What changed |")
             L.append("|---|---|")
@@ -147,6 +158,11 @@ def to_workshop(heroes):
         L.append("<details>")
         L.append(f"<summary><b>{esc(h['hero'])}</b> — <i>{esc(h['title'])}</i>"
                  f" &nbsp; {d} <small>{esc(diff)}</small></summary>")
+        if h.get("placeholder"):
+            L.append("<p><i>Rework in progress — abilities not finalised.</i></p>")
+            L.append("</details>")
+            L.append("")
+            continue
         L.append("<table>")
         L.append("<tr><th align=\"left\">Ability</th>"
                  "<th align=\"left\">What changed</th></tr>")

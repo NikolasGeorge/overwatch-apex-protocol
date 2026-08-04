@@ -22,14 +22,8 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Brigitte</b> — <i>Filler</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Ability 1]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Ability 2]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Interact]</b></td><td>Filler</td></tr>
-</table>
+<summary><b>Brigitte</b> — <i>The Radiant Dawn of the Black Forest</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<p><i>Rework in progress — abilities not finalised.</i></p>
 </details>
 
 <details>
@@ -45,14 +39,8 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>D.Va</b> — <i>The Mechanized Menace of Busan</i> &nbsp;  <small>Difficulty —</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>Filler [Ability 1]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Ability 2]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Ultimate]</b></td><td>Filler</td></tr>
-</table>
+<summary><b>D.Va</b> — <i>The Mechanized Menace of Busan</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<p><i>Rework in progress — abilities not finalised.</i></p>
 </details>
 
 <details>

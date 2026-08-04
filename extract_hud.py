@@ -123,6 +123,45 @@ def to_markdown(heroes):
     return "\n".join(L)
 
 
+def esc(s):
+    """HTML-escape. Pipes matter too: Workshop.codes treats a raw | as a table
+    delimiter even inside HTML, so it has to become an entity."""
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+             .replace("|", "&#124;"))
+
+
+def to_workshop(heroes):
+    """Collapsible blocks for the Workshop.codes description.
+
+    Uses <details> with a pure-HTML table inside. The wiki warns that
+    "Markdown in HTML sometimes not" renders, so nothing inside the block
+    relies on Markdown.
+    """
+    L = ["## Apex heroes", "",
+         "Every Apex is a full rework. Difficulty is how hard that Apex is to "
+         "pilot against six Hunters — not how strong it is. Click a hero to "
+         "see their changes.", ""]
+    for h in sorted(heroes, key=lambda x: x["hero"]):
+        d = stars(h["difficulty"])
+        diff = h["difficulty"] or "Difficulty —"
+        L.append("<details>")
+        L.append(f"<summary><b>{esc(h['hero'])}</b> — <i>{esc(h['title'])}</i>"
+                 f" &nbsp; {d} <small>{esc(diff)}</small></summary>")
+        L.append("<table>")
+        L.append("<tr><th align=\"left\">Ability</th>"
+                 "<th align=\"left\">What changed</th></tr>")
+        for name, desc in h["abilities"]:
+            bare = name.strip("| ").strip()
+            if not desc and bare != name:
+                L.append(f'<tr><td colspan="2"><i>{esc(bare)}</i></td></tr>')
+                continue
+            L.append(f"<tr><td><b>{esc(name)}</b></td><td>{esc(desc)}</td></tr>")
+        L.append("</table>")
+        L.append("</details>")
+        L.append("")
+    return "\n".join(L)
+
+
 if __name__ == "__main__":
     heroes = parse(SRC)
     if not heroes:
@@ -130,7 +169,12 @@ if __name__ == "__main__":
     md = to_markdown(heroes)
     with open(OUT, "w", encoding="utf-8") as f:
         f.write(md)
+    ws = to_workshop(heroes)
+    with open("docs/APEX_HEROES_workshop.md", "w", encoding="utf-8") as f:
+        f.write(ws)
     print(f"{len(heroes)} Apex heroes extracted -> {OUT}")
+    print(f"  workshop.codes version -> docs/APEX_HEROES_workshop.md "
+          f"({len(ws):,} chars)")
     for h in heroes:
         print(f"  {h['hero']:<16} {h['difficulty']:<16} "
               f"{len(h['abilities'])} abilities  | {h['title']}")

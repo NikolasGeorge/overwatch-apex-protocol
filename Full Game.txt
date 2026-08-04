@@ -9850,7 +9850,7 @@ rule("Apex: Hud Text")
 		If(Hero Of(Event Player) == Hero(Bastion));
 			Start Modifying Hero Voice Lines(Event Player, 1.500, True);
 			Start Scaling Player(Event Player, 1.100, True);
-			Create HUD Text(Event Player, Hero Icon String(Hero(Bastion)), Custom String("The Machine Hearald of Paris"), Custom String(
+			Create HUD Text(Event Player, Hero Icon String(Hero(Bastion)), Custom String("The Machine Herald of Paris"), Custom String(
 				"Difficulty 2/5"), Left, 0, Color(White), Color(White), Color(White), Visible To and String, Default Visibility);
 			Modify Player Variable(Event Player, Apex_Array_HUD, Append To Array, Last Text ID);
 			Create HUD Text(Event Player, Null, Custom String("Configuration: Recon [Passive]"), Custom String(

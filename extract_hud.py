@@ -84,10 +84,11 @@ def parse(path):
             name = strings[0]
             desc = strings[1] if len(strings) > 1 else ""
             abilities.append((name, desc))
-        # Heroes whose HUD is still placeholder text shouldn't publish as
-        # rows of "Filler" -- mark them instead.
-        placeholder = all(n.lower().startswith("filler")
-                          for n, _ in abilities) if abilities else False
+        # A hero is unfinished if ANY row still carries placeholder text --
+        # several have real ability names paired with "Filler" descriptions,
+        # which an all-rows check let through.
+        placeholder = any("filler" in (n + " " + d).lower()
+                          for n, d in abilities) if abilities else True
         heroes.append({"hero": hero, "title": title,
                        "difficulty": difficulty, "abilities": abilities,
                        "placeholder": placeholder})
@@ -95,11 +96,17 @@ def parse(path):
 
 
 def stars(difficulty):
+    """Hollow marks the rating, filled marks the remainder.
+
+    Counter-intuitive on paper, but Workshop.codes renders on a dark
+    background where a filled ● sits dark-on-dark and a hollow ○ reads as
+    the bright one — so filling the rating made a 1/5 look like a 4/5.
+    """
     m = re.search(r"(\d+)\s*/\s*(\d+)", difficulty or "")
     if not m:
         return ""
     got, total = int(m.group(1)), int(m.group(2))
-    return "●" * got + "○" * (total - got)
+    return "○" * got + "●" * (total - got)
 
 
 def to_markdown(heroes):
@@ -107,16 +114,14 @@ def to_markdown(heroes):
          "Every Apex is a full rework. Difficulty is how hard that Apex is to "
          "pilot against six Hunters — not how strong it is.", ""]
     for h in sorted(heroes, key=lambda x: x["hero"]):
+        if h.get("placeholder"):
+            continue          # unimplemented HUD -- don't publish a stub
         d = stars(h["difficulty"])
         head = f"### [hero {h['hero']}] {h['hero']} — *{h['title']}*"
         L.append(head)
         if d:
             L.append(f"**{d}**  {h['difficulty']}")
         L.append("")
-        if h.get("placeholder"):
-            L.append("_Rework in progress — abilities not finalised._")
-            L.append("")
-            continue
         if h["abilities"]:
             L.append("| Ability | What changed |")
             L.append("|---|---|")
@@ -153,16 +158,16 @@ def to_workshop(heroes):
          "pilot against six Hunters — not how strong it is. Click a hero to "
          "see their changes.", ""]
     for h in sorted(heroes, key=lambda x: x["hero"]):
+        if h.get("placeholder"):
+            continue          # unimplemented HUD -- don't publish a stub
         d = stars(h["difficulty"])
         diff = h["difficulty"] or "Difficulty —"
         L.append("<details>")
-        L.append(f"<summary><b>{esc(h['hero'])}</b> — <i>{esc(h['title'])}</i>"
+        # [hero X] is Workshop.codes markdown; it resolves before the HTML is
+        # rendered, so it works inside <summary>.
+        L.append(f"<summary>[hero {h['hero']}] <b>{esc(h['hero'])}</b> — "
+                 f"<i>{esc(h['title'])}</i>"
                  f" &nbsp; {d} <small>{esc(diff)}</small></summary>")
-        if h.get("placeholder"):
-            L.append("<p><i>Rework in progress — abilities not finalised.</i></p>")
-            L.append("</details>")
-            L.append("")
-            continue
         L.append("<table>")
         L.append("<tr><th align=\"left\">Ability</th>"
                  "<th align=\"left\">What changed</th></tr>")

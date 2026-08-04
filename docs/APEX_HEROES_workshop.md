@@ -3,7 +3,7 @@
 Every Apex is a full rework. Difficulty is how hard that Apex is to pilot against six Hunters — not how strong it is. Click a hero to see their changes.
 
 <details>
-<summary><b>Ana</b> — <i>The Nightmare of Necropolis</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Ana] <b>Ana</b> — <i>The Nightmare of Necropolis</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Condemn [Ability 1]</b></td><td>Ana fires a Recoiling heavy Sleep Bolt at the target enemy, Blinding them for 5 Seconds</td></tr>
@@ -12,7 +12,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Bastion</b> — <i>The Machine Hearald of Paris</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<summary>[hero Bastion] <b>Bastion</b> — <i>The Machine Herald of Paris</i> &nbsp; ○○●●● <small>Difficulty 2/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Configuration: Recon [Passive]</b></td><td>In Recon mode, Bastion is fully mobile and recoils from his submachine gun</td></tr>
@@ -22,12 +22,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Brigitte</b> — <i>The Radiant Dawn of the Black Forest</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
-<p><i>Rework in progress — abilities not finalised.</i></p>
-</details>
-
-<details>
-<summary><b>Cassidy</b> — <i>The Outlaw of Route 66</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<summary>[hero Cassidy] <b>Cassidy</b> — <i>The Outlaw of Route 66</i> &nbsp; ○○●●● <small>Difficulty 2/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>End of the Line [Primary Fire]</b></td><td>Your last Shot deals incredible Damage</td></tr>
@@ -39,12 +34,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>D.Va</b> — <i>The Mechanized Menace of Busan</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
-<p><i>Rework in progress — abilities not finalised.</i></p>
-</details>
-
-<details>
-<summary><b>Doomfist</b> — <i>The Unshackled of Rialto</i> &nbsp; ●●●●○ <small>Difficulty 4/5</small></summary>
+<summary>[hero Doomfist] <b>Doomfist</b> — <i>The Unshackled of Rialto</i> &nbsp; ○○○○● <small>Difficulty 4/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Haymaker [Secondary Fire]</b></td><td>Move at full Movespeed, travels further at the direction of your Crosshair</td></tr>
@@ -55,7 +45,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Genji</b> — <i>The Unforgotten of Lijiang</i> &nbsp; ●●●●● <small>Difficulty 5/5</small></summary>
+<summary>[hero Genji] <b>Genji</b> — <i>The Unforgotten of Lijiang</i> &nbsp; ○○○○○ <small>Difficulty 5/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Fate Sealed</b></td><td>Genji wields an ancient weapon that battles with him for control. Once your ult is filled, Genji will be given a choice</td></tr>
@@ -69,7 +59,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Hanzo</b> — <i>The Unforgiven of Hanamura</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Hanzo] <b>Hanzo</b> — <i>The Unforgiven of Hanamura</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Corruption [Passive]</b></td><td>Arrows now have 0% Gravity</td></tr>
@@ -80,7 +70,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Junkrat</b> — <i>The Mad Bomber of Junkertown</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<summary>[hero Junkrat] <b>Junkrat</b> — <i>The Mad Bomber of Junkertown</i> &nbsp; ○○●●● <small>Difficulty 2/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>I'm alive [Passive]</b></td><td>When earning a kill with total mayhem, You rez at your location</td></tr>
@@ -91,7 +81,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Lúcio</b> — <i>The Exile of Rio de Janeiro</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Lúcio] <b>Lúcio</b> — <i>The Exile of Rio de Janeiro</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Urban Surfing [Passive]</b></td><td>Wall Riding is 30% Faster</td></tr>
@@ -102,29 +92,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Mei</b> — <i>The Cryophoenix of Antarctica</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>[Primary Fire]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ability 1]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ability 2]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-</table>
-</details>
-
-<details>
-<summary><b>Mercy</b> — <i>The Ice Witch of Ayutthaya</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>[Melee]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ability 1]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ability 2]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ult]</b></td><td>Filler</td></tr>
-</table>
-</details>
-
-<details>
-<summary><b>Moira</b> — <i>Daughter of the Void</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Moira] <b>Moira</b> — <i>Daughter of the Void</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Void Hold [Crouch]</b></td><td>Crouching before firing Biotic Orbs will hold them in place</td></tr>
@@ -136,17 +104,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Orisa</b> — <i>The Iron Maiden of Numbani</i> &nbsp; ●●●●○ <small>Difficulty 4/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Secondary Fire]</b></td><td>Charge</td></tr>
-<tr><td><b>Hammer of Dawn [Ult]</b></td><td>Filler</td></tr>
-</table>
-</details>
-
-<details>
-<summary><b>Pharah</b> — <i>The Sheriff of Anubis</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Pharah] <b>Pharah</b> — <i>The Sheriff of Anubis</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Valkyrie [Secondary Fire]</b></td><td>Now only allows Hovering</td></tr>
@@ -156,7 +114,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Reaper</b> — <i>The Sydney Harbor Ripper</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Reaper] <b>Reaper</b> — <i>The Sydney Harbor Ripper</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Phantom Dive [Ability 1]</b></td><td>Drop Physical From and Move through Walls and Fly</td></tr>
@@ -166,7 +124,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Reinhardt</b> — <i>The Frozen Revenant of Eichenwalde</i> &nbsp; ●○○○○ <small>Difficulty 1/5</small></summary>
+<summary>[hero Reinhardt] <b>Reinhardt</b> — <i>The Frozen Revenant of Eichenwalde</i> &nbsp; ○●●●● <small>Difficulty 1/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Frozen Hammer [Primary Fire]</b></td><td>Swings now Knockdown Hunters</td></tr>
@@ -177,7 +135,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Roadhog</b> — <i>The Dreadnought of Havana</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Roadhog] <b>Roadhog</b> — <i>The Dreadnought of Havana</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Junk Rounds [Primary Fire]</b></td><td>Primary Fire now Stuns on Hit</td></tr>
@@ -190,7 +148,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Sigma</b> — <i>The Void Prophet of Nepal</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Sigma] <b>Sigma</b> — <i>The Void Prophet of Nepal</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Void Shift [Passive]</b></td><td>Fly up with &#124;Jump&#124; - Fly down with &#124;Crouch&#124;</td></tr>
@@ -201,7 +159,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Soldier: 76</b> — <i>The Crimson Reaper of Hollywood</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Soldier: 76] <b>Soldier: 76</b> — <i>The Crimson Reaper of Hollywood</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Transfusion [Primary Fire]</b></td><td>Soldier 76 syphons blood over 10 seconds from the target enemy, Damages target and Heals himself</td></tr>
@@ -212,7 +170,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Sombra</b> — <i>The Rogue Assassin of Dorado</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<summary>[hero Sombra] <b>Sombra</b> — <i>The Rogue Assassin of Dorado</i> &nbsp; ○○●●● <small>Difficulty 2/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Hijack [Passive]</b></td><td>When you Hack a Target, Steal 25% of their Ult Charge</td></tr>
@@ -225,18 +183,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Torbjörn</b> — <i>The Madman of Gothenburg</i> &nbsp; ●○○○○ <small>Difficulty 1/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>Undying [Passive]</b></td><td>When you Die become Unkillable for 7 Seconds after which you Die. Deal Double Damage during this.</td></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-<tr><td><b>Filler [Ability 1]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-</table>
-</details>
-
-<details>
-<summary><b>Tracer</b> — <i>The Bounty Hunter of King's Row</i> &nbsp; ●●●●○ <small>Difficulty 4/5</small></summary>
+<summary>[hero Tracer] <b>Tracer</b> — <i>The Bounty Hunter of King's Row</i> &nbsp; ○○○○● <small>Difficulty 4/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Timewinder [Passive]</b></td><td>Press &#124;Jump&#124; to perform a Double Jump</td></tr>
@@ -248,18 +195,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Widowmaker</b> — <i>The Night Hunter of Château Guillard</i> &nbsp; ●●●●○ <small>Difficulty 4/5</small></summary>
-<table>
-<tr><th align="left">Ability</th><th align="left">What changed</th></tr>
-<tr><td><b>[Secondary Fire]</b></td><td>Filler</td></tr>
-<tr><td><b>[Ability 2]</b></td><td>Filler</td></tr>
-<tr><td><b>Filler</b></td><td>Filler</td></tr>
-<tr><td><b>[Ultimate]</b></td><td>Filler</td></tr>
-</table>
-</details>
-
-<details>
-<summary><b>Winston</b> — <i>The Monkey King of Gibraltar</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Winston] <b>Winston</b> — <i>The Monkey King of Gibraltar</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Hop [Ability 1]</b></td><td>Hold &#124;SHIFT&#124; before Jumping to Hop Farther</td></tr>
@@ -271,7 +207,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Zarya</b> — <i>The Enforcer of Volskaya</i> &nbsp; ●●●○○ <small>Difficulty 3/5</small></summary>
+<summary>[hero Zarya] <b>Zarya</b> — <i>The Enforcer of Volskaya</i> &nbsp; ○○○●● <small>Difficulty 3/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Relentless Force [Passive]</b></td><td>When falling below 50% HP, Zarya will increase Healing Received by 300% until 100% HP</td></tr>
@@ -281,7 +217,7 @@ Every Apex is a full rework. Difficulty is how hard that Apex is to pilot agains
 </details>
 
 <details>
-<summary><b>Zenyatta</b> — <i>The Void Walker of Petra</i> &nbsp; ●●○○○ <small>Difficulty 2/5</small></summary>
+<summary>[hero Zenyatta] <b>Zenyatta</b> — <i>The Void Walker of Petra</i> &nbsp; ○○●●● <small>Difficulty 2/5</small></summary>
 <table>
 <tr><th align="left">Ability</th><th align="left">What changed</th></tr>
 <tr><td><b>Force Pulse [Melee]</b></td><td>Melee now pushes Hunters back</td></tr>

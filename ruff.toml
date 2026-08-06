@@ -1,0 +1,13 @@
+# Pinned explicitly so a new ruff release cannot turn CI red without a code
+# change. Errors, undefined names, unused imports, bug-prone patterns, and
+# import order -- the checks that catch mistakes rather than enforce taste.
+line-length = 100
+target-version = "py310"
+
+[lint]
+select = ["E4", "E7", "E9", "F", "W", "I", "B"]
+
+[lint.per-file-ignores]
+# conftest.py puts the repo root on sys.path, so imports in the test files
+# cannot all sit at the top.
+"tests/*" = ["E402"]

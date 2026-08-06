@@ -1,5 +1,7 @@
 # Apex Protocol
 
+[![CI](https://github.com/NikolasGeorge/overwatch-apex-protocol/actions/workflows/ci.yml/badge.svg)](https://github.com/NikolasGeorge/overwatch-apex-protocol/actions/workflows/ci.yml)
+
 An unofficial **Juggernaut** game mode for Overwatch, built entirely in the
 Workshop scripting environment. One overpowered player — the *Apex* — fights an
 entire team of six Hunters. Every hero was reworked from scratch for the role.
@@ -80,6 +82,10 @@ modules/
 docs/
   Apex Team 1 - List of Changes.txt   per-hero rework notes (Apex side)
   Things to Change.txt                open issues
+  APEX_HEROES.md                      generated hero reference
+  APEX_HEROES_workshop.md             generated, for the Workshop.codes listing
+extract_hud.py                 regenerates both docs from the game source
+tests/                         test suite for the extractor
 ```
 
 ## Using it
@@ -91,6 +97,35 @@ docs/
 
 The standalone files under `modules/` can be imported into other Workshop
 projects independently.
+
+## Tooling and tests
+
+`extract_hud.py` reads the in-game HUD definitions straight out of
+`Full Game.txt` and regenerates the hero reference in `docs/`. The hero list
+was previously maintained by hand, which meant it drifted from the mode every
+time a hero was retuned.
+
+```bash
+py -m pip install -r requirements-dev.txt
+py -m pytest          # 42 tests
+py extract_hud.py     # regenerate docs/
+```
+
+Most of the suite is regression tests for bugs found by comparing the
+generated docs against the actual game:
+
+| Guarded against | What went wrong |
+|---|---|
+| `);` inside a description | The parser terminated each HUD call on `);`. Genji's ability text legitimately contains it, so half his ability list silently vanished. |
+| Bare `3/5` difficulty | D.Va's header omits the word "Difficulty". A keyword-only match dropped her rating with no error. |
+| Partial `Filler` rows | Several heroes pair a finished ability name with placeholder text. Requiring *every* row to be filler published half-written heroes. |
+| Raw `\|` in ability text | Workshop.codes reads a pipe as a table delimiter even inside HTML, which broke the surrounding table. |
+
+CI runs the suite on Ubuntu and Windows across Python 3.10–3.13, plus ruff.
+A third job regenerates `docs/` and fails if the result differs from what is
+committed — the docs cannot drift from the game source without CI saying so.
+
+---
 
 ## Known issues
 

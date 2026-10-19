@@ -7,6 +7,7 @@ record: a `);` inside a description truncating the ability list, D.Va's bare
 was found by comparing output against the game rather than by reading code,
 which is exactly the kind of bug that comes back.
 """
+import pytest
 from conftest import HERO_BLOCK
 
 import extract_hud as eh
@@ -221,3 +222,33 @@ class TestToWorkshop:
         # is rendered, so it has to stay unescaped in the summary line.
         ws = eh.to_workshop(eh.parse(workshop_source()))
         assert "[hero Ana]" in ws
+
+
+# ------------------------------------------------------------------- main/CLI
+class TestMain:
+    def test_writes_both_outputs_to_the_given_paths(self, workshop_source, tmp_path):
+        md, ws = tmp_path / "heroes.md", tmp_path / "heroes_ws.md"
+        rc = eh.main(["--src", workshop_source(), "--out", str(md),
+                      "--workshop-out", str(ws), "--quiet"])
+        assert rc == 0
+        assert "Nightmare of Necropolis" in md.read_text(encoding="utf-8")
+        assert "<details>" in ws.read_text(encoding="utf-8")
+
+    def test_exits_when_the_source_has_no_hud_blocks(self, workshop_source, tmp_path):
+        with pytest.raises(SystemExit) as e:
+            eh.main(["--src", workshop_source(text="nothing here"),
+                     "--out", str(tmp_path / "o.md"),
+                     "--workshop-out", str(tmp_path / "w.md"), "--quiet"])
+        assert "No HUD blocks found" in str(e.value)
+
+    def test_quiet_suppresses_the_summary(self, workshop_source, tmp_path, capsys):
+        eh.main(["--src", workshop_source(), "--out", str(tmp_path / "o.md"),
+                 "--workshop-out", str(tmp_path / "w.md"), "--quiet"])
+        assert capsys.readouterr().out == ""
+
+    def test_summary_lists_each_hero_by_default(self, workshop_source, tmp_path, capsys):
+        eh.main(["--src", workshop_source(), "--out", str(tmp_path / "o.md"),
+                 "--workshop-out", str(tmp_path / "w.md")])
+        out = capsys.readouterr().out
+        assert "1 Apex heroes extracted" in out
+        assert "Ana" in out

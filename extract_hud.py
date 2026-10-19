@@ -16,11 +16,13 @@ Each Apex hero's HUD is built by a block like:
 The first Create HUD Text is the header (title + difficulty); the rest are
 ability rows, ordered by the sort index that follows the alignment argument.
 """
+import argparse
 import re
 import sys
 
 SRC = "Full Game.txt"
 OUT = "docs/APEX_HEROES.md"
+WORKSHOP_OUT = "docs/APEX_HEROES_workshop.md"
 
 RE_BLOCK = re.compile(
     r"If\(Hero Of\(Event Player\) == Hero\(([^)]+)\)\);(.*?)\bEnd;", re.S)
@@ -183,19 +185,42 @@ def to_workshop(heroes):
     return "\n".join(L)
 
 
-if __name__ == "__main__":
-    heroes = parse(SRC)
+def main(argv=None):
+    """Extract from --src and write both Markdown flavours.
+
+    The paths were hardcoded, which meant the script only ran from the repo
+    root and the archived pre-OW2 source could not be extracted without
+    editing the file.
+    """
+    ap = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
+    ap.add_argument("--src", default=SRC, help=f"Workshop source (default: {SRC})")
+    ap.add_argument("--out", default=OUT, help=f"Markdown output (default: {OUT})")
+    ap.add_argument("--workshop-out", default=WORKSHOP_OUT,
+                    help=f"Workshop.codes output (default: {WORKSHOP_OUT})")
+    ap.add_argument("--quiet", action="store_true", help="suppress the summary")
+    args = ap.parse_args(argv)
+
+    heroes = parse(args.src)
     if not heroes:
-        sys.exit("No HUD blocks found in " + SRC)
+        sys.exit("No HUD blocks found in " + args.src)
+
     md = to_markdown(heroes)
-    with open(OUT, "w", encoding="utf-8") as f:
+    with open(args.out, "w", encoding="utf-8") as f:
         f.write(md)
     ws = to_workshop(heroes)
-    with open("docs/APEX_HEROES_workshop.md", "w", encoding="utf-8") as f:
+    with open(args.workshop_out, "w", encoding="utf-8") as f:
         f.write(ws)
-    print(f"{len(heroes)} Apex heroes extracted -> {OUT}")
-    print(f"  workshop.codes version -> docs/APEX_HEROES_workshop.md "
+
+    if args.quiet:
+        return 0
+    print(f"{len(heroes)} Apex heroes extracted -> {args.out}")
+    print(f"  workshop.codes version -> {args.workshop_out} "
           f"({len(ws):,} chars)")
     for h in heroes:
         print(f"  {h['hero']:<16} {h['difficulty']:<16} "
               f"{len(h['abilities'])} abilities  | {h['title']}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
